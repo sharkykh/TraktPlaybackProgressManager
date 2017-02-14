@@ -4,12 +4,12 @@ class MainUI(object):
     def __init__(self, parent, app):
         self.top = parent
         parent.title('Trakt.tv Playback Progress Remover')
-        
+
         self.parent = parent
         self.root = app
 
         self.selectedStatus = False
-        
+
         # Widget Initialization
         self._listbox = Listbox(parent,
             font = "{Segoe UI} 10",
@@ -135,20 +135,20 @@ class MainUI(object):
             font = "{Segoe UI Light} 12 bold",
             textvariable = self.lbl_loggedin,
         )
-        
+
         # widget commands
-        self._listbox.bind('<<ListboxSelect>>', self._listbox_OnSelect)
+        self._listbox.bind('<<ListboxSelect>>', self._listbox_onselect)
         self._btnRefresh.configure(
-            command = self._btnRefresh_command
+            command = self._btn_refresh_command
         )
         self._btnRemoveSelected.configure(
-            command = self._btnRemoveSelected_command
+            command = self._btn_remove_selected_command
         )
         self._btnSelectDeselectAll.configure(
-            command = self._btnSelectDeselectAll_command
+            command = self._btn_toggle_selection_command
         )
         self._btnLogin.configure(
-            command = self._btnLogin_command
+            command = self._btn_login_command
         )
 
         # Geometry Management
@@ -424,7 +424,7 @@ class AuthUI():
     def __init__(self, parent, app):
         self.top = parent
         parent.title('Auth window')
-        
+
         self.parent = parent
         self.root = app
 
