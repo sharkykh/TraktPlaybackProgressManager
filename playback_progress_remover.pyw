@@ -101,7 +101,7 @@ class MainScreen(MainUI):
             removed_count = 0
             for list_index in reversed(selection):
                 with Trakt.client.configuration.oauth.from_response(self.root.authorization):
-                    response = Trakt['sync/playback'].delete_progress(
+                    response = Trakt['sync/playback'].delete(
                         self.root.playback_ids[list_index][0])
                     if not response:
                         failed_at = self.root.playback_ids[list_index]
