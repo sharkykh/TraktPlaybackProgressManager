@@ -464,10 +464,10 @@ class AuthUI():
         # widget commands
 
         self._button_get_code.configure(
-            command = self._button_get_code_command
+            command = self.button_get_code_command
         )
         self._button_done.configure(
-            command = self._button_done_command
+            command = self.button_done_command
         )
 
 

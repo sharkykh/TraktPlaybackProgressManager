@@ -1,4 +1,4 @@
-#pylint: disable=C0111
+""" Trakt Playback Manager """
 import json
 import Tkinter as tk
 import tkMessageBox
@@ -8,11 +8,13 @@ from time import sleep
 from os.path import isfile as file_exists
 from ui import MainUI, AuthUI
 
-from trakt import Trakt
+from trakt import Trakt # Trakt.py by fuzeman
 from trakt.objects import Movie, Episode, Show
 
 class AuthDialog(AuthUI):
-    def _button_get_code_command(self):
+    """ Auth UI extension """
+    def button_get_code_command(self):
+        """ When user clicks Get Code button. """
         # Request authentication
         webbrowser.open(Trakt['oauth/pin'].url(), new=2) # New tab
 
@@ -23,7 +25,11 @@ class AuthDialog(AuthUI):
         self._entry_code['state'] = 'normal'
         self._button_done['state'] = 'normal'
 
-    def _button_done_command(self):
+    def button_done_command(self):
+        """
+        When user has clicked 'Done'
+        after completing auth process
+        """
         # Exchange `code` for `access_token`
         pin = self.pin_code.get()
         if len(pin) == 0 or len(pin) > 8:
@@ -44,8 +50,10 @@ class AuthDialog(AuthUI):
         self.top.destroy()
 
 class MainScreen(MainUI):
+    """ Main UI extension """
     # Auth & Login
     def hide_auth_button(self):
+        """ Hide auth button """
         self._btnLogin.grid_forget()
     def _btn_login_command(self):
         self.root.show_auth_window()
@@ -56,17 +64,16 @@ class MainScreen(MainUI):
 
     # Listbox
     def listbox_insert(self, index, *elements):
+        """ Inserts items to the Listbox """
         self._listbox.insert(index, *elements)
     def listbox_clear_all(self):
+        """ Removes all of the Listbox's items """
         self._listbox.delete(0, tk.END)
     def _listbox_onselect(self, event):
         listbox = event.widget
         newinfo = []
         selection = listbox.curselection()
-        if len(selection) >= 1:
-            self.selectedStatus = True
-        else:
-            self.selectedStatus = False
+        self.selectedStatus = bool(len(selection) >= 1)
 
         for list_index in selection:
             newinfo.append(self.root.playback_ids[list_index][1])
@@ -120,6 +127,7 @@ class MainScreen(MainUI):
                 tkMessageBox.showinfo('Message', '%d Items removed.' % removed_count)
 
 class Application(object):
+    """ Application container """
     def __init__(self):
         # Trakt client configuration
         Trakt.base_url = 'http://api.trakt.tv'
@@ -146,6 +154,7 @@ class Application(object):
         Trakt.client.on('oauth.token_refreshed', self._on_token_refreshed)
 
     def main(self):
+        """ Run main application """
         self.main_tk = tk.Tk()
         self.main_win = MainScreen(self.main_tk, self)
 
@@ -154,15 +163,16 @@ class Application(object):
             self.refresh_list()
 
         self.main_tk.update()
-
-        if not self._check_auth():
-            sleep(0.5)
-            auth_diag = AuthDialog(tk.Toplevel(self.main_tk), self)
-            self.main_tk.wait_window(auth_diag.top)
+        self.show_auth_window()
 
         self.main_tk.mainloop()
 
     def refresh_list(self, local=False):
+        """
+        Refreshes the Listbox with items from:\n
+            (local==False) Trakt.tv's database
+            (local==True) playback_ids array
+        """
         self.main_win.listbox_clear_all() # Clear
         if not local:
             self.playback_ids = []
@@ -170,7 +180,7 @@ class Application(object):
                 tkMessageBox.showwarning('Error', 'Authentication required.')
                 return False
 
-            with Trakt.configuration.oauth.from_response(self.authorization):
+            with Trakt.client.configuration.oauth.from_response(self.authorization):
                 # Fetch playback
                 playback = Trakt['sync/playback'].get(exceptions=True)
                 for _, item in playback.items():
@@ -202,7 +212,11 @@ class Application(object):
             idx += 1
 
     def update_info(self, newinfo):
-        # newinfo is an item Episode/Movie object from playback_ids
+        """
+        Updates the selected item info,
+        displayed in labels and textboxs.\n
+            newinfo = Episode or Movie item from playback_ids
+        """
         if len(newinfo) == 1:
             if isinstance(newinfo[0], Episode):
                 self.main_win.lbl_showName.set("Show:")
@@ -257,6 +271,7 @@ class Application(object):
             self.main_win.txt_title.set("<Multiple>")
 
     def show_auth_window(self):
+        """ Create and display an Auth window if not authed. """
         if not self._check_auth():
             sleep(0.5)
             auth_diag = AuthDialog(tk.Toplevel(self.main_tk), self)
@@ -276,19 +291,26 @@ class Application(object):
             json.dump(self.authorization, outfile)
 
     def update_user_info(self):
+        """
+        Updates the authed username (and full name if present)
+        """
         if not self.authorization:
             self.main_win.lbl_loggedin.set("Not logged in.")
         else:
             self.main_win.hide_auth_button()
-            with Trakt.configuration.oauth.from_response(self.authorization):
+            with Trakt.client.configuration.oauth.from_response(self.authorization):
                 usersettings = Trakt['users/settings'].get()
                 self.username = usersettings['user']['username']
                 self.fullname = usersettings['user']['name']
-                self.main_win.lbl_loggedin.set("Logged in as: %s (%s)" % (self.username, self.fullname))
+                if self.fullname is not u'':
+                    self.main_win.lbl_loggedin.set("Logged in as: %s (%s)" \
+                                                   % (self.username, self.fullname))
+                else:
+                    self.main_win.lbl_loggedin.set("Logged in as: %s" % self.username)
 
-def main():
+def _main():
     root = Application()
     root.main()
 
 if __name__ == '__main__':
-    main()
+    _main()
