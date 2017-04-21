@@ -1,4 +1,4 @@
-from playback_progress_remover import Application
+from main import Application
 # noinspection PyPackageRequirements
 from trakt import Trakt
 
