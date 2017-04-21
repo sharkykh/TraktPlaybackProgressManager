@@ -1,5 +1,7 @@
 from playback_progress_remover import Application
+# noinspection PyPackageRequirements
 from trakt import Trakt
+
 
 def send_test_data(main_app):
     if not main_app.authorization:
@@ -14,6 +16,7 @@ def send_test_data(main_app):
         Trakt['scrobble'].pause(episode={'ids': {'tvdb': 5966778}})
         Trakt['scrobble'].pause(episode={'ids': {'tvdb': 5940102}})
     print 'test data sent'
+
 
 def main():
     root = Application()
