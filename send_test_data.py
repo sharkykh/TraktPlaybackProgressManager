@@ -1,5 +1,5 @@
-from main import Application
-# noinspection PyPackageRequirements
+from tppm import Application
+
 from trakt import Trakt
 
 
@@ -24,6 +24,7 @@ def main():
         send_test_data(root)
     else:
         print 'Authentication required.'
+
 
 if __name__ == '__main__':
     main()

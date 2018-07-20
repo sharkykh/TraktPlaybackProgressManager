@@ -1,7 +1,9 @@
-from Tkinter import *
+from __future__ import absolute_import
+from __future__ import unicode_literals
+
+from Tkinter import Button, Entry, Label, Listbox, StringVar
 
 
-# noinspection PyUnresolvedReferences,SpellCheckingInspection
 class MainUI(object):
     def __init__(self, parent, app):
         self.top = parent
@@ -444,7 +446,6 @@ class MainUI(object):
         parent.grid_columnconfigure(4, weight=0, minsize=120, pad=0)
 
 
-# noinspection PyUnresolvedReferences,SpellCheckingInspection
 class AuthUI(object):
     def __init__(self, parent, app):
         self.top = parent
