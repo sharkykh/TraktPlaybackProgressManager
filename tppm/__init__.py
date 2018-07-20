@@ -181,9 +181,6 @@ class Application(object):
         self.main_tk.update()
         self.show_auth_window()
 
-        icon = os.path.join(os.path.dirname(__file__), 'static', 'icon.ico')
-        self.main_tk.iconbitmap(icon)
-
         self.main_tk.mainloop()
 
     def refresh_list(self, local=False):
