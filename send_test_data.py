@@ -1,5 +1,6 @@
 # coding: utf-8
 from __future__ import absolute_import
+from __future__ import print_function
 from __future__ import unicode_literals
 
 from tppm import Application
@@ -8,10 +9,6 @@ from trakt import Trakt
 
 
 def send_test_data(main_app):
-    if not main_app.authorization:
-        print 'Authentication required.'
-        return False
-
     with Trakt.configuration.oauth.from_response(main_app.authorization):
         Trakt['scrobble'].pause(movie={'ids': {'tmdb': 118340}})
         Trakt['scrobble'].pause(episode={'ids': {'tvdb': 5761493}})
@@ -19,15 +16,18 @@ def send_test_data(main_app):
         Trakt['scrobble'].pause(episode={'ids': {'tvdb': 5950264}})
         Trakt['scrobble'].pause(episode={'ids': {'tvdb': 5966778}})
         Trakt['scrobble'].pause(episode={'ids': {'tvdb': 5940102}})
-    print 'test data sent'
+        Trakt['scrobble'].pause(episode={'ids': {'tvdb': 6636942}})
+
+    print('Test data sent.')
 
 
 def main():
     root = Application()
-    if root._check_auth():
-        send_test_data(root)
-    else:
-        print 'Authentication required.'
+    if not root._check_auth():
+        print('Authentication required.')
+        return
+
+    send_test_data(root)
 
 
 if __name__ == '__main__':
