@@ -2,7 +2,9 @@
 authorization.json
 
 # Editors / IDEs
-.idea
+.vscode/
+.idea/
 
 # Compiled Python
 *.py[cod]
+__pycache__/
