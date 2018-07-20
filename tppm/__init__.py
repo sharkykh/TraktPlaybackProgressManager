@@ -148,6 +148,10 @@ class Application(object):
             id='11664'
         )
 
+        Trakt.client.configuration.defaults.oauth(
+            refresh=True
+        )
+
         Trakt.client.configuration.defaults.client(
             id='907c2fe5ff19a529456c0058d2c96f6913f62b55fc6e9a86605f05a0c4e2fec7',
             secret='0b70b2072730e0e2ab845f8f89fbfa4a808f47e10678365cb746f4b81fbb56a3'
@@ -163,7 +167,7 @@ class Application(object):
         self.playback_ids = []
 
         # Bind trakt events
-        Trakt.client.on('oauth.token_refreshed', self._on_token_refreshed)
+        Trakt.client.on('oauth.refresh', self._on_token_refreshed)
 
     def main(self):
         """ Run main application """
@@ -296,7 +300,7 @@ class Application(object):
             self.authorization = auth_data
         return bool(auth_data)
 
-    def _on_token_refreshed(self, response):
+    def _on_token_refreshed(self, username, response):
         # OAuth token refreshed, save token for future calls
         self.authorization = response
 
