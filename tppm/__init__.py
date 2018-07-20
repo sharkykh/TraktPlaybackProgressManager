@@ -46,7 +46,7 @@ class AuthDialog(AuthUI):
         if not self.root.authorization:
             tkMessageBox.showwarning('Warning', 'Auth unsuccessful.')
         else:
-            auth.save(os.path.abspath(self.root.auth_filename), self.root.authorization)
+            auth.save(self.root.auth_filepath, self.root.authorization)
             tkMessageBox.showinfo('Message', 'Login successful.')
             self.root.update_user_info()
             self.root.refresh_list()
@@ -163,7 +163,6 @@ class Application(object):
         self.authorization = None
         self.username = None
         self.fullname = None
-        self.auth_filename = 'authorization.json'
         self.playback_ids = []
 
         # Bind trakt events
@@ -291,8 +290,12 @@ class Application(object):
             auth_diag = AuthDialog(Tk.Toplevel(self.main_tk), self)
             self.main_tk.wait_window(auth_diag.top)
 
+    @property
+    def auth_filepath(self):
+        return os.path.join(os.path.dirname(__file__), '..', 'authorization.json')
+
     def _check_auth(self):
-        auth_data = auth.load(os.path.abspath(self.auth_filename))
+        auth_data = auth.load(self.auth_filepath)
         if auth_data:
             self.authorization = auth_data
         return bool(auth_data)
@@ -301,7 +304,7 @@ class Application(object):
         # OAuth token refreshed, save token for future calls
         self.authorization = response
 
-        auth.save(os.path.abspath(self.auth_filename), self.authorization)
+        auth.save(self.auth_filepath, self.authorization)
 
     def update_user_info(self):
         """
