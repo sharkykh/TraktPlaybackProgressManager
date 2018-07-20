@@ -2,7 +2,26 @@
 from __future__ import absolute_import
 from __future__ import unicode_literals
 
-from Tkinter import Button, Entry, Label, Listbox, StringVar
+from Tkinter import Button, Entry, Label, Listbox, Scrollbar, StringVar, TclError
+
+
+# Based on: http://effbot.org/zone/tkinter-autoscrollbar.htm
+class AutoScrollbar(Scrollbar):
+    """A scrollbar that hides itself if it's not needed.
+    Only Works if you use the grid geometry manager."""
+    def set(self, lo, hi):
+        if float(lo) <= 0.0 and float(hi) >= 1.0:
+            # grid_remove is currently missing from Tkinter!
+            self.tk.call("grid", "remove", self)
+        else:
+            self.grid()
+        Scrollbar.set(self, lo, hi)
+
+    def pack(self, **kw):
+        raise TclError("cannot use pack with this widget")
+
+    def place(self, **kw):
+        raise TclError("cannot use place with this widget")
 
 
 class MainUI(object):
@@ -23,6 +42,9 @@ class MainUI(object):
             selectmode="extended",
             state="normal",
             cursor="hand2",
+        )
+        self._listbox_scrollbar = AutoScrollbar(
+            self._listbox
         )
         self._label_header = Label(
             parent,
@@ -164,6 +186,13 @@ class MainUI(object):
 
         # widget commands
         self._listbox.bind('<<ListboxSelect>>', self._listbox_onselect)
+        self._listbox.config(
+            yscrollcommand=self._listbox_scrollbar.set
+        )
+        self._listbox_scrollbar.config(
+            orient='vertical',
+            command=self._listbox.yview
+        )
         self._btnRefresh.configure(
             command=self._btn_refresh_command
         )
@@ -189,6 +218,19 @@ class MainUI(object):
             pady=5,
             rowspan=7,
             sticky="nsew"
+        )
+        self._listbox.columnconfigure(
+            0,
+            weight=1
+        )
+        self._listbox.rowconfigure(
+            0,
+            weight=1
+        )
+        self._listbox_scrollbar.grid(
+            column=2,
+            rowspan=7,
+            sticky="ns"
         )
         self._label_header.grid(
             in_=parent,
