@@ -3,7 +3,6 @@
 from __future__ import absolute_import
 from __future__ import unicode_literals
 
-import json
 import os.path
 import Tkinter as Tk
 import tkMessageBox
@@ -13,6 +12,7 @@ from time import sleep
 from trakt import Trakt
 from trakt.objects import Movie, Episode, Show
 
+from . import auth
 from .ui import MainUI, AuthUI
 
 
@@ -46,8 +46,7 @@ class AuthDialog(AuthUI):
         if not self.root.authorization:
             tkMessageBox.showwarning('Warning', 'Auth unsuccessful.')
         else:
-            with open('authorization.json', 'w') as outfile:
-                json.dump(self.root.authorization, outfile)
+            auth.save(os.path.abspath(self.root.auth_filename), self.root.authorization)
             tkMessageBox.showinfo('Message', 'Login successful.')
             self.root.update_user_info()
             self.root.refresh_list()
@@ -292,17 +291,16 @@ class Application(object):
             self.main_tk.wait_window(auth_diag.top)
 
     def _check_auth(self):
-        if os.path.isfile(self.auth_filename):
-            with open(self.auth_filename) as data_file:
-                self.authorization = json.load(data_file)
-            return True
+        auth_data = auth.load(os.path.abspath(self.auth_filename))
+        if auth_data:
+            self.authorization = auth_data
+        return bool(auth_data)
 
     def _on_token_refreshed(self, response):
         # OAuth token refreshed, save token for future calls
         self.authorization = response
 
-        with open(self.auth_filename, 'w') as outfile:
-            json.dump(self.authorization, outfile)
+        auth.save(os.path.abspath(self.auth_filename), self.authorization)
 
     def update_user_info(self):
         """
