@@ -312,7 +312,7 @@ class Application(object):
                 usersettings = Trakt['users/settings'].get()
                 self.username = usersettings['user']['username']
                 self.fullname = usersettings['user']['name']
-                if self.fullname is not '':
+                if self.fullname not in ('', self.username):
                     self.main_win.lbl_loggedin.set("Logged in as: {0} ({1})".format(self.username, self.fullname))
                 else:
                     self.main_win.lbl_loggedin.set("Logged in as: {0}".format(self.username))
