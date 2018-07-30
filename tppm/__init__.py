@@ -4,16 +4,17 @@ from __future__ import absolute_import
 from __future__ import unicode_literals
 
 import os.path
-import Tkinter as Tk
-import tkMessageBox
 import webbrowser
 from time import sleep
 
+import six.moves.tkinter as Tk
+import six.moves.tkinter_messagebox as tkMessageBox
+
 from trakt import Trakt
-from trakt.objects import Movie, Episode, Show
+from trakt.objects import Episode, Movie, Show
 
 from . import auth
-from .ui import MainUI, AuthUI
+from .ui import AuthUI, MainUI
 
 
 class AuthDialog(AuthUI):

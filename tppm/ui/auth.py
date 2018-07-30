@@ -2,7 +2,12 @@
 from __future__ import absolute_import
 from __future__ import unicode_literals
 
-from Tkinter import Button, Entry, Label, StringVar
+from six.moves.tkinter import (
+    Button,
+    Entry,
+    Label,
+    StringVar
+)
 
 
 class AuthUI(object):

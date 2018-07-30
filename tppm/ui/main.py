@@ -2,7 +2,15 @@
 from __future__ import absolute_import
 from __future__ import unicode_literals
 
-from Tkinter import Button, Entry, Label, Listbox, Scrollbar, StringVar, TclError
+from six.moves.tkinter import (
+    Button,
+    Entry,
+    Label,
+    Listbox,
+    Scrollbar,
+    StringVar,
+    TclError
+)
 
 
 # Based on: http://effbot.org/zone/tkinter-autoscrollbar.htm
