@@ -3,6 +3,9 @@ This is a small Tkinter GUI application that allows a [Trakt.tv](https://trakt.t
 
 ## Supported Python versions
 * 2.7
+* 3.5
+* 3.6
+* 3.7
 
 ## Python requirements
 * [trakt.py](https://github.com/fuzeman/trakt.py)
