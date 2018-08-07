@@ -1,1 +1,2 @@
-trakt.py<3.0
+six >= 1.11.0
+trakt.py == 2.14.1
