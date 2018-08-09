@@ -135,7 +135,7 @@ class MainScreen(MainUI):
         confirm = tk_messagebox.askyesno(
             'Confirm action',
             'Are you sure you want to remove {many}the'
-            '\nselected item{plural} from your Trakt database?'.format(
+            ' selected item{plural} from your Trakt database?'.format(
                 many='all of ' if count > 1 else '',
                 plural='s' if count > 1 else ''
             )
