@@ -108,23 +108,17 @@ class MainScreen(MainUI):
         self._listbox.delete(0, Tk.END)
 
     def _listbox_onselect(self, event):
-        listbox = event.widget
-        newinfo = []
-        selection = listbox.curselection()
-        self.selectedStatus = bool(len(selection) >= 1)
-
-        for list_index in selection:
-            newinfo.append(self.root.playback_ids[list_index][1])
-        self.root.update_info(newinfo)
+        selection = event.widget.curselection()
+        self.root.update_info([
+            self.root.playback_ids[index][1]
+            for index in selection
+        ])
 
     # (De)Select All
     def _btn_toggle_selection_command(self):
-        if self.selectedStatus is None or not self.selectedStatus:  # Deselected
-            self._listbox.selection_set(0, Tk.END)  # select all
-            self.selectedStatus = True
-        else:  # Selected
-            self._listbox.selection_clear(0, Tk.END)  # deselect all
-            self.selectedStatus = False
+        multiple = len(self._listbox.curselection()) > 1
+        action = 'selection_clear' if multiple else 'selection_set'
+        getattr(self._listbox, action)(0, Tk.END)
         self._listbox.event_generate('<<ListboxSelect>>')
 
     # Remove
@@ -135,40 +129,56 @@ class MainScreen(MainUI):
 
         listbox = self._listbox
         selection = listbox.curselection()
-        if len(selection) >= 1:
-            yesno = tk_messagebox.askyesno(
-                'Message',
-                'Are you sure you want to remove all of'
-                '\nthe selected item(s) from your Trakt database?'
+        count = len(selection)
+        if not count:
+            return False
+
+        confirm = tk_messagebox.askyesno(
+            'Confirm action',
+            'Are you sure you want to remove {many}the'
+            '\nselected item{plural} from your Trakt database?'.format(
+                many='all of ' if count > 1 else '',
+                plural='s' if count > 1 else ''
             )
-            if not yesno:
-                return False
+        )
+        if not confirm:
+            return False
 
-            self.root.busyman.busy()
+        self.root.busyman.busy()
 
-            failed_at = None
-            removed_count = 0
-            for list_index in reversed(selection):
-                with Trakt.client.configuration.oauth.from_response(self.root.authorization):
-                    response = Trakt['sync/playback'].delete(
-                        self.root.playback_ids[list_index][0])
-                    if not response:
-                        failed_at = self.root.playback_ids[list_index]
-                        break
-                self.root.playback_ids.pop(list_index)
-                removed_count += 1
+        failed_at = None
+        removed_count = 0
+        for list_index in reversed(selection):
+            with Trakt.client.configuration.oauth.from_response(self.root.authorization):
+                current = self.root.playback_ids[list_index]
+                response = Trakt['sync/playback'].delete(current[0])
+                if not response:
+                    failed_at = current
+                    break
+            self.root.playback_ids.pop(list_index)
+            removed_count += 1
 
-            self.root.refresh_list(local=True)
-            self.root.update_info([])
+        if failed_at is not None:
+            tk_messagebox.showwarning(
+                'Warning',
+                'Something went wrong with {id}:\n{item}'.format(
+                    id=failed_at[0],
+                    item=failed_at[1]
+                )
+            )
+        else:
+            tk_messagebox.showinfo(
+                'Success',
+                '{count} item{plural} removed.'.format(
+                    count=removed_count,
+                    plural='s' if removed_count > 1 else ''
+                )
+            )
 
-            self.root.busyman.unbusy()
+        self.root.refresh_list(local=True)
+        self.root.update_info([])
 
-            if failed_at is not None:
-                tk_messagebox.showwarning(
-                    'Warning',
-                    'Something went wrong with: \n{!r}.'.format(failed_at))
-            else:
-                tk_messagebox.showinfo('Message', '{0} Items removed.'.format(removed_count))
+        self.root.busyman.unbusy()
 
 
 class Application(object):
@@ -241,7 +251,8 @@ class Application(object):
             self.playback_ids = self._fetch_list()
 
         if not self.playback_ids:
-            tk_messagebox.showinfo('Message', 'There are no items to remove.')
+            if not local:
+                tk_messagebox.showinfo('Message', 'There are no items to remove.')
             return True
 
         def make_list_item(idx, item):
