@@ -7,7 +7,7 @@ import os.path
 import webbrowser
 
 import six.moves.tkinter as Tk
-import six.moves.tkinter_messagebox as tkMessageBox
+import six.moves.tkinter_messagebox as tk_messagebox
 
 from trakt import Trakt
 from trakt.objects import Episode, Movie, Show
@@ -43,21 +43,26 @@ class AuthDialog(AuthUI):
         """
         # Exchange `code` for `access_token`
         pin = self.pin_code.get()
-        if len(pin) == 0 or len(pin) > 8:
-            tkMessageBox.showwarning('Warning', "You didn't enter the PIN code.")
+        if len(pin) != 8:
+            tk_messagebox.showwarning('Warning', 'The PIN code is invalid.', parent=self.parent)
             return False
         self.root.authorization = Trakt['oauth'].token_exchange(pin, 'urn:ietf:wg:oauth:2.0:oob')
 
         if not self.root.authorization:
-            tkMessageBox.showwarning('Warning', 'Auth unsuccessful.')
+            tk_messagebox.showwarning('Warning', 'Login unsuccessful.', parent=self.parent)
+            self.destroy()
         else:
             auth.save(self.root.auth_filepath, self.root.authorization)
-            tkMessageBox.showinfo('Message', 'Login successful.')
+            tk_messagebox.showinfo('Message', 'Login successful.', parent=self.parent)
+            self.destroy()
+
             self.root.update_user_info()
             self.root.refresh_list()
+
+    def destroy(self):
         # Return to MainScreen
-        self.root.main_tk.focus_set()
         self.parent.destroy()
+        self.root.main_tk.focus_set()
 
 
 class MainScreen(MainUI):
@@ -107,15 +112,17 @@ class MainScreen(MainUI):
     # Remove
     def _btn_remove_selected_command(self):
         if not self.root.authorization:
-            tkMessageBox.showwarning('Error', 'Authentication required.')
+            tk_messagebox.showwarning('Error', 'Authentication required.')
             return False
 
         listbox = self._listbox
         selection = listbox.curselection()
         if len(selection) >= 1:
-            yesno = tkMessageBox.askyesno('Message',
-                                          'Are you sure you want to remove all of\n'
-                                          'the selected item(s) from your Trakt database?')
+            yesno = tk_messagebox.askyesno(
+                'Message',
+                'Are you sure you want to remove all of'
+                '\nthe selected item(s) from your Trakt database?'
+            )
             if not yesno:
                 return False
 
@@ -135,11 +142,11 @@ class MainScreen(MainUI):
             self.root.update_info([])
 
             if failed_at is not None:
-                tkMessageBox.showwarning(
+                tk_messagebox.showwarning(
                     'Warning',
                     'Something went wrong with: \n{!r}.'.format(failed_at))
             else:
-                tkMessageBox.showinfo('Message', '{0} Items removed.'.format(removed_count))
+                tk_messagebox.showinfo('Message', '{0} Items removed.'.format(removed_count))
 
 
 class Application(object):
@@ -199,7 +206,7 @@ class Application(object):
         if not local:
             self.playback_ids = []
             if not self.authorization:
-                tkMessageBox.showwarning('Error', 'Authentication required.')
+                tk_messagebox.showwarning('Error', 'Authentication required.')
                 return False
 
             with Trakt.client.configuration.oauth.from_response(self.authorization):
@@ -213,7 +220,7 @@ class Application(object):
                         self.playback_ids.append([item.id, item])
 
                 if not self.playback_ids:
-                    tkMessageBox.showinfo('Message', 'There are no items to remove.')
+                    tk_messagebox.showinfo('Message', 'There are no items to remove.')
                     return True
 
         # populate list
