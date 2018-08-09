@@ -95,6 +95,7 @@ class MainScreen(MainUI):
     def _btn_refresh_command(self):
         self.root.busyman.busy()
         self.root.refresh_list()
+        self.root.update_info([])
         self.root.busyman.unbusy()
 
     # Listbox
