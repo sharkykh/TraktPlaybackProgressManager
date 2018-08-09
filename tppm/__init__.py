@@ -14,7 +14,11 @@ from trakt import Trakt
 from trakt.objects import Episode, Movie, Show
 
 from . import auth
-from .ui import AuthUI, MainUI
+from .ui import (
+    AuthUI,
+    MainUI,
+    set_icon
+)
 
 
 class AuthDialog(AuthUI):
@@ -173,6 +177,7 @@ class Application(object):
         """ Run main application """
         self.main_tk = Tk.Tk()
         self.main_win = MainScreen(self.main_tk, self)
+        set_icon(self.main_tk)
 
         if self._check_auth():
             self.update_user_info()
