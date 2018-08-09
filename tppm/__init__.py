@@ -79,7 +79,9 @@ class MainScreen(MainUI):
 
     # Refresh
     def _btn_refresh_command(self):
+        self.root.busyman.busy()
         self.root.refresh_list()
+        self.root.busyman.unbusy()
 
     # Listbox
     def listbox_insert(self, index, *elements):
@@ -127,6 +129,8 @@ class MainScreen(MainUI):
             if not yesno:
                 return False
 
+            self.root.busyman.busy()
+
             failed_at = None
             removed_count = 0
             for list_index in reversed(selection):
@@ -141,6 +145,8 @@ class MainScreen(MainUI):
 
             self.root.refresh_list(local=True)
             self.root.update_info([])
+
+            self.root.busyman.unbusy()
 
             if failed_at is not None:
                 tk_messagebox.showwarning(
@@ -191,8 +197,10 @@ class Application(object):
         self.busyman = BusyManager(self.main_tk)
 
         if self._check_auth():
+            self.busyman.busy()
             self.update_user_info()
             self.refresh_list()
+            self.busyman.unbusy()
 
         self.main_tk.update()
         self.show_auth_window()
