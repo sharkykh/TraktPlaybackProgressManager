@@ -21,6 +21,18 @@ from .ui import (
     set_icon
 )
 
+__version__ = '0.6'
+
+TRAKT_APP = {
+    'name': 'Playback Progress Manager',
+    'version': __version__,
+    'id': '11664'
+}
+TRAKT_CLIENT = {
+    'id': '907c2fe5ff19a529456c0058d2c96f6913f62b55fc6e9a86605f05a0c4e2fec7',
+    'secret': '0b70b2072730e0e2ab845f8f89fbfa4a808f47e10678365cb746f4b81fbb56a3'
+}
+
 
 class AuthDialog(AuthUI):
     """ Auth UI extension """
@@ -162,19 +174,11 @@ class Application(object):
     def __init__(self):
         # Trakt client configuration
         Trakt.base_url = 'http://api.trakt.tv'
-
-        Trakt.client.configuration.defaults.app(
-            id='11664'
-        )
-
-        Trakt.client.configuration.defaults.oauth(
-            refresh=True
-        )
-
-        Trakt.client.configuration.defaults.client(
-            id='907c2fe5ff19a529456c0058d2c96f6913f62b55fc6e9a86605f05a0c4e2fec7',
-            secret='0b70b2072730e0e2ab845f8f89fbfa4a808f47e10678365cb746f4b81fbb56a3'
-        )
+        Trakt.client.configuration.defaults.app(**TRAKT_APP)
+        Trakt.client.configuration.defaults.client(**TRAKT_CLIENT)
+        Trakt.client.configuration.defaults.oauth(refresh=True)
+        # Bind trakt events
+        Trakt.client.on('oauth.refresh', self._on_token_refreshed)
 
         self.main_tk = None
         self.main_win = None
@@ -183,9 +187,6 @@ class Application(object):
         self.username = None
         self.fullname = None
         self.playback_ids = []
-
-        # Bind trakt events
-        Trakt.client.on('oauth.refresh', self._on_token_refreshed)
 
     def main(self):
         """ Run main application """
