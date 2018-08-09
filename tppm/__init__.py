@@ -62,13 +62,12 @@ class AuthDialog(AuthUI):
         if len(pin) != 8:
             tk_messagebox.showwarning('Warning', 'The PIN code is invalid.', parent=self.parent)
             return False
-        self.root.authorization = Trakt['oauth'].token_exchange(pin, 'urn:ietf:wg:oauth:2.0:oob')
+        self.root.auth = Trakt['oauth'].token_exchange(pin, 'urn:ietf:wg:oauth:2.0:oob')
 
-        if not self.root.authorization:
+        if not self.root.auth:
             tk_messagebox.showwarning('Warning', 'Login unsuccessful.', parent=self.parent)
             self.destroy()
         else:
-            auth.save(self.root.auth_filepath, self.root.authorization)
             tk_messagebox.showinfo('Message', 'Login successful.', parent=self.parent)
             self.destroy()
 
@@ -123,7 +122,7 @@ class MainScreen(MainUI):
 
     # Remove
     def _btn_remove_selected_command(self):
-        if not self.root.authorization:
+        if not self.root.auth:
             tk_messagebox.showwarning('Error', 'Authentication required.')
             return False
 
@@ -149,12 +148,11 @@ class MainScreen(MainUI):
         failed_at = None
         removed_count = 0
         for list_index in reversed(selection):
-            with Trakt.client.configuration.oauth.from_response(self.root.authorization):
-                current = self.root.playback_ids[list_index]
-                response = Trakt['sync/playback'].delete(current[0])
-                if not response:
-                    failed_at = current
-                    break
+            current = self.root.playback_ids[list_index]
+            response = Trakt['sync/playback'].delete(current[0])
+            if not response:
+                failed_at = current
+                break
             self.root.playback_ids.pop(list_index)
             removed_count += 1
 
@@ -184,19 +182,22 @@ class MainScreen(MainUI):
 class Application(object):
     """ Application container """
 
+    auth_filepath = os.path.normpath(os.path.join(
+        os.path.dirname(__file__), '..', 'authorization.json'
+    ))
+
     def __init__(self):
         # Trakt client configuration
         Trakt.base_url = 'http://api.trakt.tv'
-        Trakt.client.configuration.defaults.app(**TRAKT_APP)
-        Trakt.client.configuration.defaults.client(**TRAKT_CLIENT)
-        Trakt.client.configuration.defaults.oauth(refresh=True)
+        Trakt.configuration.defaults.app(**TRAKT_APP)
+        Trakt.configuration.defaults.client(**TRAKT_CLIENT)
         # Bind trakt events
-        Trakt.client.on('oauth.refresh', self._on_token_refreshed)
+        Trakt.on('oauth.refresh', self._on_token_refreshed)
 
         self.main_tk = None
         self.main_win = None
 
-        self.authorization = None
+        self._authorization = None
         self.username = None
         self.fullname = None
         self.playback_ids = []
@@ -210,7 +211,7 @@ class Application(object):
 
         self.busyman = BusyManager(self.main_tk)
 
-        if self._check_auth():
+        if self.auth:
             self.busyman.busy()
             self.update_user_info()
             self.refresh_list()
@@ -222,7 +223,7 @@ class Application(object):
         self.main_tk.mainloop()
 
     def _fetch_list(self):
-        if not self.authorization:
+        if not self.auth:
             tk_messagebox.showwarning('Error', 'Authentication required.')
             return []
 
@@ -234,9 +235,8 @@ class Application(object):
                 elif isinstance(obj, Movie):
                     yield (obj.id, obj)
 
-        with Trakt.client.configuration.oauth.from_response(self.authorization):
-            # Fetch playback
-            playback = Trakt['sync/playback'].get(exceptions=True)
+        # Fetch playback
+        playback = Trakt['sync/playback'].get(exceptions=True)
 
         return list(make_items(playback))
 
@@ -342,7 +342,7 @@ class Application(object):
 
     def show_auth_window(self):
         """ Create and display an Auth window if not authed. """
-        if not self._check_auth():
+        if not self.auth:
             diag_root = Tk.Toplevel(self.main_tk, {'name': 'auth_window'})
             diag_root.grab_set()
             self.busyman.busy()
@@ -356,38 +356,55 @@ class Application(object):
             self.main_tk.grab_release()
             self.busyman.unbusy()
 
-    @property
-    def auth_filepath(self):
-        return os.path.normpath(os.path.join(os.path.dirname(__file__), '..', 'authorization.json'))
-
-    def _check_auth(self):
-        auth_data = auth.load(self.auth_filepath)
-        if auth_data:
-            self.authorization = auth_data
-        return bool(auth_data)
-
     def _on_token_refreshed(self, username, response):
-        # OAuth token refreshed, save token for future calls
-        self.authorization = response
-
-        auth.save(self.auth_filepath, self.authorization)
+        """ OAuth token refreshed, save tokens for future calls. """
+        self.auth = (response, username)
 
     def update_user_info(self):
         """
         Updates the authed username (and full name if present)
         """
-        if not self.authorization:
+        if not self.auth:
             self.main_win.lbl_loggedin.set('Not logged in.')
-        else:
-            self.main_win.hide_auth_button()
-            with Trakt.client.configuration.oauth.from_response(self.authorization):
-                usersettings = Trakt['users/settings'].get()
-                self.username = usersettings['user']['username']
-                self.fullname = usersettings['user']['name']
-                if self.fullname not in ('', self.username):
-                    self.main_win.lbl_loggedin.set('Logged in as: {0} ({1})'.format(self.username, self.fullname))
-                else:
-                    self.main_win.lbl_loggedin.set('Logged in as: {0}'.format(self.username))
+            return
+
+        self.main_win.hide_auth_button()
+
+        user_settings = Trakt['users/settings'].get()
+        self.username = user_settings['user']['username']
+        self.fullname = user_settings['user']['name']
+
+        text = 'Logged in as: {0}'.format(self.username)
+        if self.fullname not in ('', self.username):
+            text += ' ({1})'.format(self.fullname)
+
+        self.main_win.lbl_loggedin.set(text)
+
+    @property
+    def auth(self):
+        if not self._authorization:
+            auth_data = auth.load(self.auth_filepath)
+            self.auth = auth_data
+
+        return bool(self._authorization)
+
+    @auth.setter
+    def auth(self, data):
+        if not data:
+            return
+
+        try:
+            data, username = data
+        except ValueError:
+            username = None
+
+        Trakt.configuration.defaults.oauth.from_response(
+            response=data,
+            refresh=True,
+            username=username
+        )
+        self._authorization = data
+        auth.save(self.auth_filepath, data)
 
 
 def main():
