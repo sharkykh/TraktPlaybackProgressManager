@@ -5,7 +5,6 @@ from __future__ import unicode_literals
 
 import os.path
 import webbrowser
-from time import sleep
 
 import six.moves.tkinter as Tk
 import six.moves.tkinter_messagebox as tkMessageBox
@@ -16,6 +15,7 @@ from trakt.objects import Episode, Movie, Show
 from . import auth
 from .ui import (
     AuthUI,
+    center_toplevel,
     MainUI,
     set_icon
 )
@@ -57,7 +57,7 @@ class AuthDialog(AuthUI):
             self.root.refresh_list()
         # Return to MainScreen
         self.root.main_tk.focus_set()
-        self.top.destroy()
+        self.parent.destroy()
 
 
 class MainScreen(MainUI):
@@ -178,6 +178,7 @@ class Application(object):
         self.main_tk = Tk.Tk()
         self.main_win = MainScreen(self.main_tk, self)
         set_icon(self.main_tk)
+        center_toplevel(self.main_tk)
 
         if self._check_auth():
             self.update_user_info()
@@ -292,9 +293,15 @@ class Application(object):
     def show_auth_window(self):
         """ Create and display an Auth window if not authed. """
         if not self._check_auth():
-            sleep(0.5)
-            auth_diag = AuthDialog(Tk.Toplevel(self.main_tk), self)
-            self.main_tk.wait_window(auth_diag.top)
+            diag_root = Tk.Toplevel(self.main_tk)
+            diag_root.grab_set()
+
+            AuthDialog(diag_root, self)
+            center_toplevel(diag_root)
+
+            self.main_tk.wait_window(diag_root)
+
+            self.main_tk.grab_release()
 
     @property
     def auth_filepath(self):

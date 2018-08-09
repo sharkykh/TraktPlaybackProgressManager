@@ -34,7 +34,6 @@ class AutoScrollbar(Scrollbar):
 
 class MainUI(object):
     def __init__(self, parent, app):
-        self.top = parent
         parent.title('Trakt.tv Playback Progress Remover')
 
         self.parent = parent

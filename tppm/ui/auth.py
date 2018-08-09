@@ -12,7 +12,6 @@ from six.moves.tkinter import (
 
 class AuthUI(object):
     def __init__(self, parent, app):
-        self.top = parent
         parent.title('Auth window')
 
         self.parent = parent
