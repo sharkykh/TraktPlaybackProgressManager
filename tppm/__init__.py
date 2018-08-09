@@ -23,7 +23,7 @@ class AuthDialog(AuthUI):
     def button_get_code_command(self):
         """ When user clicks Get Code button. """
         # Request authentication
-        webbrowser.open(Trakt['oauth/pin'].url(), new=2)  # New tab
+        webbrowser.open_new_tab(Trakt['oauth/pin'].url())
 
         # Disable PIN button
         self._button_get_code['state'] = 'disabled'
