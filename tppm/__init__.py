@@ -40,7 +40,7 @@ class AuthDialog(AuthUI):
         # Exchange `code` for `access_token`
         pin = self.pin_code.get()
         if len(pin) == 0 or len(pin) > 8:
-            tkMessageBox.showwarning('Warning', 'You didn\'t enter the PIN code.')
+            tkMessageBox.showwarning('Warning', "You didn't enter the PIN code.")
             return False
         self.root.authorization = Trakt['oauth'].token_exchange(pin, 'urn:ietf:wg:oauth:2.0:oob')
 
@@ -98,7 +98,7 @@ class MainScreen(MainUI):
         else:  # Selected
             self._listbox.selection_clear(0, Tk.END)  # deselect all
             self.selectedStatus = False
-        self._listbox.event_generate("<<ListboxSelect>>")
+        self._listbox.event_generate('<<ListboxSelect>>')
 
     # Remove
     def _btn_remove_selected_command(self):
@@ -109,9 +109,9 @@ class MainScreen(MainUI):
         listbox = self._listbox
         selection = listbox.curselection()
         if len(selection) >= 1:
-            yesno = tkMessageBox.askyesno("Message",
-                                          "Are you sure you want to remove all of\n"
-                                          "the selected item(s) from your Trakt database?")
+            yesno = tkMessageBox.askyesno('Message',
+                                          'Are you sure you want to remove all of\n'
+                                          'the selected item(s) from your Trakt database?')
             if not yesno:
                 return False
 
@@ -233,56 +233,56 @@ class Application(object):
         """
         if len(newinfo) == 1:
             if isinstance(newinfo[0], Episode):
-                self.main_win.lbl_showName.set("Show:")
-                self.main_win.lbl_season.set("Season:")
-                self.main_win.lbl_episode.set("Episode:")
-                self.main_win.lbl_episodeTitle.set("Title:")
+                self.main_win.lbl_showName.set('Show:')
+                self.main_win.lbl_season.set('Season:')
+                self.main_win.lbl_episode.set('Episode:')
+                self.main_win.lbl_episodeTitle.set('Title:')
 
                 self.main_win.txt_ID.set(newinfo[0].id)
-                self.main_win.txt_progress.set("%0.f%%" % newinfo[0].progress)
+                self.main_win.txt_progress.set('%0.f%%' % newinfo[0].progress)
                 self.main_win.txt_showName.set(newinfo[0].show.title)
                 self.main_win.txt_season.set(newinfo[0].pk[0])
                 self.main_win.txt_episode.set(newinfo[0].pk[1])
                 self.main_win.txt_title.set(newinfo[0].title)
 
             elif isinstance(newinfo[0], Movie):
-                self.main_win.lbl_showName.set("Title:")
-                self.main_win.lbl_season.set("Year:")
-                self.main_win.lbl_episode.set("")
-                self.main_win.lbl_episodeTitle.set("")
+                self.main_win.lbl_showName.set('Title:')
+                self.main_win.lbl_season.set('Year:')
+                self.main_win.lbl_episode.set('')
+                self.main_win.lbl_episodeTitle.set('')
 
                 self.main_win.txt_ID.set(newinfo[0].id)
-                self.main_win.txt_progress.set("%0.f%%" % newinfo[0].progress)
+                self.main_win.txt_progress.set('%0.f%%' % newinfo[0].progress)
                 self.main_win.txt_showName.set(newinfo[0].title)
                 self.main_win.txt_season.set(newinfo[0].year)
-                self.main_win.txt_episode.set("")
-                self.main_win.txt_title.set("")
+                self.main_win.txt_episode.set('')
+                self.main_win.txt_title.set('')
 
         elif len(newinfo) == 0:
-            self.main_win.lbl_showName.set("Show:")
-            self.main_win.lbl_season.set("Season:")
-            self.main_win.lbl_episode.set("Episode:")
-            self.main_win.lbl_episodeTitle.set("Title:")
+            self.main_win.lbl_showName.set('Show:')
+            self.main_win.lbl_season.set('Season:')
+            self.main_win.lbl_episode.set('Episode:')
+            self.main_win.lbl_episodeTitle.set('Title:')
 
-            self.main_win.txt_ID.set("")
-            self.main_win.txt_progress.set("")
-            self.main_win.txt_showName.set("")
-            self.main_win.txt_season.set("")
-            self.main_win.txt_episode.set("")
-            self.main_win.txt_title.set("")
+            self.main_win.txt_ID.set('')
+            self.main_win.txt_progress.set('')
+            self.main_win.txt_showName.set('')
+            self.main_win.txt_season.set('')
+            self.main_win.txt_episode.set('')
+            self.main_win.txt_title.set('')
 
         else:  # more than one
-            self.main_win.lbl_showName.set("Show:")
-            self.main_win.lbl_season.set("Season:")
-            self.main_win.lbl_episode.set("Episode:")
-            self.main_win.lbl_episodeTitle.set("Title:")
+            self.main_win.lbl_showName.set('Show:')
+            self.main_win.lbl_season.set('Season:')
+            self.main_win.lbl_episode.set('Episode:')
+            self.main_win.lbl_episodeTitle.set('Title:')
 
-            self.main_win.txt_ID.set("<Multiple>")
-            self.main_win.txt_progress.set("<Multiple>")
-            self.main_win.txt_showName.set("<Multiple>")
-            self.main_win.txt_season.set("<Multiple>")
-            self.main_win.txt_episode.set("<Multiple>")
-            self.main_win.txt_title.set("<Multiple>")
+            self.main_win.txt_ID.set('<Multiple>')
+            self.main_win.txt_progress.set('<Multiple>')
+            self.main_win.txt_showName.set('<Multiple>')
+            self.main_win.txt_season.set('<Multiple>')
+            self.main_win.txt_episode.set('<Multiple>')
+            self.main_win.txt_title.set('<Multiple>')
 
     def show_auth_window(self):
         """ Create and display an Auth window if not authed. """
@@ -312,7 +312,7 @@ class Application(object):
         Updates the authed username (and full name if present)
         """
         if not self.authorization:
-            self.main_win.lbl_loggedin.set("Not logged in.")
+            self.main_win.lbl_loggedin.set('Not logged in.')
         else:
             self.main_win.hide_auth_button()
             with Trakt.client.configuration.oauth.from_response(self.authorization):
@@ -320,9 +320,9 @@ class Application(object):
                 self.username = usersettings['user']['username']
                 self.fullname = usersettings['user']['name']
                 if self.fullname not in ('', self.username):
-                    self.main_win.lbl_loggedin.set("Logged in as: {0} ({1})".format(self.username, self.fullname))
+                    self.main_win.lbl_loggedin.set('Logged in as: {0} ({1})'.format(self.username, self.fullname))
                 else:
-                    self.main_win.lbl_loggedin.set("Logged in as: {0}".format(self.username))
+                    self.main_win.lbl_loggedin.set('Logged in as: {0}'.format(self.username))
 
 
 def main():
