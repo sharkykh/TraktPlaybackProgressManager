@@ -15,6 +15,7 @@ def send_test_data(main_app):
         Trakt['scrobble'].pause(episode={'ids': {'tvdb': 5951173}})
         Trakt['scrobble'].pause(episode={'ids': {'tvdb': 5950264}})
         Trakt['scrobble'].pause(episode={'ids': {'tvdb': 5966778}})
+        Trakt['scrobble'].pause(episode={'ids': {'tvdb': 5966780}})
         Trakt['scrobble'].pause(episode={'ids': {'tvdb': 5940102}})
         Trakt['scrobble'].pause(episode={'ids': {'tvdb': 6636942}})
 

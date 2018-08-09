@@ -5,9 +5,12 @@ from __future__ import unicode_literals
 
 import os.path
 import webbrowser
+from operator import itemgetter
 
 import six.moves.tkinter as Tk
 import six.moves.tkinter_messagebox as tk_messagebox
+from six import itervalues
+from six.moves import filter, map
 
 from trakt import Trakt
 from trakt.objects import Episode, Movie, Show
@@ -96,7 +99,7 @@ class MainScreen(MainUI):
         self.root.busyman.unbusy()
 
     # Listbox
-    def listbox_insert(self, index, *elements):
+    def listbox_insert(self, index, elements):
         """ Inserts items to the Listbox """
         self._listbox.insert(index, *elements)
 
@@ -208,6 +211,25 @@ class Application(object):
 
         self.main_tk.mainloop()
 
+    def _fetch_list(self):
+        if not self.authorization:
+            tk_messagebox.showwarning('Error', 'Authentication required.')
+            return []
+
+        def make_items(data):
+            for obj in itervalues(playback):
+                if isinstance(obj, Show):
+                    for (_sk, _ek), episode in obj.episodes():
+                        yield (episode.id, episode)
+                elif isinstance(obj, Movie):
+                    yield (obj.id, obj)
+
+        with Trakt.client.configuration.oauth.from_response(self.authorization):
+            # Fetch playback
+            playback = Trakt['sync/playback'].get(exceptions=True)
+
+        return list(make_items(playback))
+
     def refresh_list(self, local=False):
         """
         Refreshes the Listbox with items, source depends on the value of `local`
@@ -216,39 +238,37 @@ class Application(object):
         """
         self.main_win.listbox_clear_all()  # Clear
         if not local:
-            self.playback_ids = []
-            if not self.authorization:
-                tk_messagebox.showwarning('Error', 'Authentication required.')
-                return False
+            self.playback_ids = self._fetch_list()
 
-            with Trakt.client.configuration.oauth.from_response(self.authorization):
-                # Fetch playback
-                playback = Trakt['sync/playback'].get(exceptions=True)
-                for _, item in playback.items():
-                    if isinstance(item, Show):
-                        for (_, _), episode in item.episodes():
-                            self.playback_ids.append([episode.id, episode])
-                    elif isinstance(item, Movie):
-                        self.playback_ids.append([item.id, item])
+        if not self.playback_ids:
+            tk_messagebox.showinfo('Message', 'There are no items to remove.')
+            return True
 
-                if not self.playback_ids:
-                    tk_messagebox.showinfo('Message', 'There are no items to remove.')
-                    return True
+        def make_list_item(idx, item):
+            if isinstance(item, Episode):
+                return '{id:03d}. {show}: S{se:02d}E{ep:02d} ({title})'.format(
+                    id=idx,
+                    show=item.show.title,
+                    se=item.pk[0],
+                    ep=item.pk[1],
+                    title=item.title
+                )
+            elif isinstance(item, Movie):
+                return '{id:03d}. {title} ({year})'.format(
+                    id=idx,
+                    title=item.title,
+                    year=item.year
+                )
+            else:
+                return None
 
         # populate list
-        idx = 1
-        cpy_playback = list(self.playback_ids)
-        cpy_playback.reverse()
-        while cpy_playback:
-            list_item = ''
-            _, item = cpy_playback.pop()
-            if isinstance(item, Episode):
-                list_item = '{id:03d}. {show}: S{se:02d}E{ep:02d} ({title})'.format(
-                    id=idx, show=item.show.title, se=item.pk[0], ep=item.pk[1], title=item.title)
-            elif isinstance(item, Movie):
-                list_item = '{id:03d}. {title} ({year})'.format(id=idx, title=item.title, year=item.year)
-            self.main_win.listbox_insert(Tk.END, list_item)
-            idx += 1
+        generator = map(itemgetter(1), self.playback_ids)
+        list_items = filter(None, [
+            make_list_item(idx, item)
+            for idx, item in enumerate(generator, 1)
+        ])
+        self.main_win.listbox_insert(Tk.END, list_items)
 
     def update_info(self, newinfo):
         """
