@@ -15,6 +15,7 @@ from trakt.objects import Episode, Movie, Show
 from . import auth
 from .ui import (
     AuthUI,
+    BusyManager,
     center_toplevel,
     MainUI,
     set_icon
@@ -187,6 +188,8 @@ class Application(object):
         set_icon(self.main_tk)
         center_toplevel(self.main_tk)
 
+        self.busyman = BusyManager(self.main_tk)
+
         if self._check_auth():
             self.update_user_info()
             self.refresh_list()
@@ -300,8 +303,10 @@ class Application(object):
     def show_auth_window(self):
         """ Create and display an Auth window if not authed. """
         if not self._check_auth():
-            diag_root = Tk.Toplevel(self.main_tk)
+            diag_root = Tk.Toplevel(self.main_tk, {'name': 'auth_window'})
             diag_root.grab_set()
+            self.busyman.busy()
+            self.busyman.unbusy(diag_root)
 
             AuthDialog(diag_root, self)
             center_toplevel(diag_root)
@@ -309,6 +314,7 @@ class Application(object):
             self.main_tk.wait_window(diag_root)
 
             self.main_tk.grab_release()
+            self.busyman.unbusy()
 
     @property
     def auth_filepath(self):
