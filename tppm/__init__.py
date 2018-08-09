@@ -312,7 +312,7 @@ class Application(object):
 
     @property
     def auth_filepath(self):
-        return os.path.join(os.path.dirname(__file__), '..', 'authorization.json')
+        return os.path.normpath(os.path.join(os.path.dirname(__file__), '..', 'authorization.json'))
 
     def _check_auth(self):
         auth_data = auth.load(self.auth_filepath)
