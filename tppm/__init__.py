@@ -385,7 +385,7 @@ class Application(object):
     def authorization(self):
         if not self._authorization:
             auth_data = auth.load(self.auth_filepath)
-            self.authorization = auth_data
+            self._update_auth(auth_data)
 
         return bool(self._authorization)
 
@@ -399,13 +399,19 @@ class Application(object):
         except ValueError:
             username = None
 
+        self._update_auth(data, username)
+        auth.save(self.auth_filepath, data)
+
+    def _update_auth(self, data, username=None):
+        self._authorization = data
+        if not data:
+            return
+
         Trakt.configuration.defaults.oauth.from_response(
             response=data,
             refresh=True,
             username=username
         )
-        self._authorization = data
-        auth.save(self.auth_filepath, data)
 
 
 def main():
