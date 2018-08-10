@@ -62,9 +62,9 @@ class AuthDialog(AuthUI):
         if len(pin) != 8:
             tk_messagebox.showwarning('Warning', 'The PIN code is invalid.', parent=self.parent)
             return False
-        self.root.auth = Trakt['oauth'].token_exchange(pin, 'urn:ietf:wg:oauth:2.0:oob')
+        self.root.authorization = Trakt['oauth'].token_exchange(pin, 'urn:ietf:wg:oauth:2.0:oob')
 
-        if not self.root.auth:
+        if not self.root.authorization:
             tk_messagebox.showwarning('Warning', 'Login unsuccessful.', parent=self.parent)
             self.destroy()
         else:
@@ -123,7 +123,7 @@ class MainScreen(MainUI):
 
     # Remove
     def _btn_remove_selected_command(self):
-        if not self.root.auth:
+        if not self.root.authorization:
             tk_messagebox.showwarning('Error', 'Authentication required.')
             return False
 
@@ -212,7 +212,7 @@ class Application(object):
 
         self.busyman = BusyManager(self.main_tk)
 
-        if self.auth:
+        if self.authorization:
             self.busyman.busy()
             self.update_user_info()
             self.refresh_list()
@@ -224,7 +224,7 @@ class Application(object):
         self.main_tk.mainloop()
 
     def _fetch_list(self):
-        if not self.auth:
+        if not self.authorization:
             tk_messagebox.showwarning('Error', 'Authentication required.')
             return []
 
@@ -343,7 +343,7 @@ class Application(object):
 
     def show_auth_window(self):
         """ Create and display an Auth window if not authed. """
-        if not self.auth:
+        if not self.authorization:
             diag_root = Tk.Toplevel(self.main_tk, {'name': 'auth_window'})
             diag_root.grab_set()
             self.busyman.busy()
@@ -359,13 +359,13 @@ class Application(object):
 
     def _on_token_refreshed(self, username, response):
         """ OAuth token refreshed, save tokens for future calls. """
-        self.auth = (response, username)
+        self.authorization = (response, username)
 
     def update_user_info(self):
         """
         Updates the authed username (and full name if present)
         """
-        if not self.auth:
+        if not self.authorization:
             self.main_win.lbl_loggedin.set('Not logged in.')
             return
 
@@ -382,15 +382,15 @@ class Application(object):
         self.main_win.lbl_loggedin.set(text)
 
     @property
-    def auth(self):
+    def authorization(self):
         if not self._authorization:
             auth_data = auth.load(self.auth_filepath)
-            self.auth = auth_data
+            self.authorization = auth_data
 
         return bool(self._authorization)
 
-    @auth.setter
-    def auth(self, data):
+    @authorization.setter
+    def authorization(self, data):
         if not data:
             return
 

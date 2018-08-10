@@ -23,7 +23,7 @@ def send_test_data():
 
 def main():
     root = Application()
-    if not root.auth:
+    if not root.authorization:
         print('Authentication required.')
         return
 
