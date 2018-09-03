@@ -3,19 +3,27 @@
 from __future__ import absolute_import
 from __future__ import unicode_literals
 
+import io
 import json
 import os.path
 
 
 def save(path, data):
-    with open(path, 'w') as data_file:
-        json.dump(data, data_file, sort_keys=True,
-                  indent=2, separators=(',', ': '))
+    with io.open(path, 'w', encoding='utf-8', newline='\n') as fh:
+        # Must NOT use `json.dump` due to a Python 2 bug:
+        # https://stackoverflow.com/a/14870531/7597273
+        fh.write(json.dumps(
+            data, sort_keys=True, ensure_ascii=False,
+            indent=2, separators=(',', ': ')
+        ))
 
 
 def load(path):
     if not os.path.isfile(path):
-        return False
+        return None
 
-    with open(path) as data_file:
-        return json.load(data_file)
+    with io.open(path, 'r', encoding='utf-8') as fh:
+        try:
+            return json.load(fh)
+        except ValueError:
+            return None
