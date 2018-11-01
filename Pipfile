@@ -5,7 +5,7 @@ name = "pypi"
 
 [packages]
 "six" = ">= 1.11.0"
-"trakt.py" = "< 3.0.0"
+"trakt.py" = "== 3.0.0"
 
 [dev-packages]
 "flake8" = "*"
