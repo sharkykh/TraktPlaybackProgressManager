@@ -95,6 +95,11 @@ class MainUI(object):
             font="{Segoe UI Light} 12 bold",
             text="ID:",
         )
+        self._lbl_PausedAt = Label(
+            parent,
+            font="{Segoe UI Light} 12 bold",
+            text="Paused At:",
+        )
         self._lbl_Progress = Label(
             parent,
             font="{Segoe UI Light} 12 bold",
@@ -132,6 +137,16 @@ class MainUI(object):
             relief="flat",
             state="readonly",
             textvariable=self.txt_ID,
+            width=0,
+        )
+        self.txt_paused_at = StringVar()
+        self._txtPausedAt = Entry(
+            parent,
+            font="{Segoe UI Light} 12",
+            readonlybackground="#ffffff",
+            relief="flat",
+            state="readonly",
+            textvariable=self.txt_paused_at,
             width=0,
         )
         self.txt_progress = StringVar()
@@ -223,7 +238,7 @@ class MainUI(object):
             ipady=0,
             padx=0,
             pady=5,
-            rowspan=7,
+            rowspan=8,
             sticky="nsew"
         )
         self._listbox.columnconfigure(
@@ -335,7 +350,7 @@ class MainUI(object):
             rowspan=1,
             sticky="nsew"
         )
-        self._lbl_Progress.grid(
+        self._lbl_PausedAt.grid(
             in_=parent,
             column=1,
             row=3,
@@ -347,7 +362,7 @@ class MainUI(object):
             rowspan=1,
             sticky="nsew"
         )
-        self._lbl_Show.grid(
+        self._lbl_Progress.grid(
             in_=parent,
             column=1,
             row=4,
@@ -359,7 +374,7 @@ class MainUI(object):
             rowspan=1,
             sticky="nsew"
         )
-        self._lbl_Season.grid(
+        self._lbl_Show.grid(
             in_=parent,
             column=1,
             row=5,
@@ -371,7 +386,7 @@ class MainUI(object):
             rowspan=1,
             sticky="nsew"
         )
-        self._lbl_Episode.grid(
+        self._lbl_Season.grid(
             in_=parent,
             column=1,
             row=6,
@@ -383,10 +398,22 @@ class MainUI(object):
             rowspan=1,
             sticky="nsew"
         )
-        self._lbl_Title.grid(
+        self._lbl_Episode.grid(
             in_=parent,
             column=1,
             row=7,
+            columnspan=1,
+            ipadx=0,
+            ipady=0,
+            padx=0,
+            pady=7,
+            rowspan=1,
+            sticky="nsew"
+        )
+        self._lbl_Title.grid(
+            in_=parent,
+            column=1,
+            row=8,
             columnspan=1,
             ipadx=0,
             ipady=0,
@@ -407,7 +434,7 @@ class MainUI(object):
             rowspan=1,
             sticky="nsew"
         )
-        self._txtProgress.grid(
+        self._txtPausedAt.grid(
             in_=parent,
             column=2,
             row=3,
@@ -419,7 +446,7 @@ class MainUI(object):
             rowspan=1,
             sticky="nsew"
         )
-        self._txtShowName.grid(
+        self._txtProgress.grid(
             in_=parent,
             column=2,
             row=4,
@@ -431,7 +458,7 @@ class MainUI(object):
             rowspan=1,
             sticky="nsew"
         )
-        self._txtSeason.grid(
+        self._txtShowName.grid(
             in_=parent,
             column=2,
             row=5,
@@ -443,7 +470,7 @@ class MainUI(object):
             rowspan=1,
             sticky="nsew"
         )
-        self._txtEpisode.grid(
+        self._txtSeason.grid(
             in_=parent,
             column=2,
             row=6,
@@ -455,7 +482,7 @@ class MainUI(object):
             rowspan=1,
             sticky="nsew"
         )
-        self._txtTitle.grid(
+        self._txtEpisode.grid(
             in_=parent,
             column=2,
             row=7,
@@ -467,10 +494,22 @@ class MainUI(object):
             rowspan=1,
             sticky="nsew"
         )
+        self._txtTitle.grid(
+            in_=parent,
+            column=2,
+            row=8,
+            columnspan=1,
+            ipadx=0,
+            ipady=0,
+            padx=5,
+            pady=7,
+            rowspan=1,
+            sticky="nsew"
+        )
         self._lbl_loggedin.grid(
             in_=parent,
             column=1,
-            row=8,
+            row=9,
             columnspan=2,
             ipadx=0,
             ipady=0,
@@ -489,7 +528,8 @@ class MainUI(object):
         parent.grid_rowconfigure(5, weight=0, minsize=30, pad=0)
         parent.grid_rowconfigure(6, weight=0, minsize=30, pad=0)
         parent.grid_rowconfigure(7, weight=0, minsize=30, pad=0)
-        parent.grid_rowconfigure(8, weight=0, minsize=200, pad=0)
+        parent.grid_rowconfigure(8, weight=0, minsize=30, pad=0)
+        parent.grid_rowconfigure(9, weight=0, minsize=160, pad=0)
         parent.grid_columnconfigure(1, weight=0, minsize=70, pad=5)
         parent.grid_columnconfigure(2, weight=0, minsize=450, pad=0)
         parent.grid_columnconfigure(3, weight=0, minsize=450, pad=0)

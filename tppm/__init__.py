@@ -296,6 +296,7 @@ class Application(object):
                 self.main_win.lbl_episodeTitle.set('Title:')
 
                 self.main_win.txt_ID.set(newinfo[0].id)
+                self.main_win.txt_paused_at.set(newinfo[0].paused_at.strftime('%Y-%m-%d %H:%M:%S UTC'))
                 self.main_win.txt_progress.set('%0.f%%' % newinfo[0].progress)
                 self.main_win.txt_showName.set(newinfo[0].show.title)
                 self.main_win.txt_season.set(newinfo[0].pk[0])
@@ -309,6 +310,7 @@ class Application(object):
                 self.main_win.lbl_episodeTitle.set('')
 
                 self.main_win.txt_ID.set(newinfo[0].id)
+                self.main_win.txt_paused_at.set(newinfo[0].paused_at.strftime('%Y-%m-%d %H:%M:%S UTC'))
                 self.main_win.txt_progress.set('%0.f%%' % newinfo[0].progress)
                 self.main_win.txt_showName.set(newinfo[0].title)
                 self.main_win.txt_season.set(newinfo[0].year)
@@ -322,6 +324,7 @@ class Application(object):
             self.main_win.lbl_episodeTitle.set('Title:')
 
             self.main_win.txt_ID.set('')
+            self.main_win.txt_paused_at.set('')
             self.main_win.txt_progress.set('')
             self.main_win.txt_showName.set('')
             self.main_win.txt_season.set('')
@@ -335,6 +338,7 @@ class Application(object):
             self.main_win.lbl_episodeTitle.set('Title:')
 
             self.main_win.txt_ID.set('<Multiple>')
+            self.main_win.txt_paused_at.set('<Multiple>')
             self.main_win.txt_progress.set('<Multiple>')
             self.main_win.txt_showName.set('<Multiple>')
             self.main_win.txt_season.set('<Multiple>')
