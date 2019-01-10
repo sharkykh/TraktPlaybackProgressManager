@@ -49,6 +49,7 @@ class MainUI(object):
             selectmode="extended",
             state="normal",
             cursor="hand2",
+            exportselection=False,
         )
         self._listbox_scrollbar = AutoScrollbar(
             self._listbox
