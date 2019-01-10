@@ -85,6 +85,16 @@ class AuthDialog(AuthUI):
 class MainScreen(MainUI):
     """ Main UI extension """
 
+    def _open_repo(self, event):
+        confirm = tk_messagebox.askokcancel(
+            None,
+            'Open the GitHub repository?'
+        )
+        if not confirm:
+            return False
+
+        webbrowser.open_new_tab('https://github.com/sharkykh/TraktPlaybackProgressManager')
+
     # Auth & Login
     def hide_auth_button(self):
         """ Hide auth button """

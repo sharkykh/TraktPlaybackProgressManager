@@ -12,6 +12,8 @@ from six.moves.tkinter import (
     TclError
 )
 
+import tppm
+
 
 # Based on: http://effbot.org/zone/tkinter-autoscrollbar.htm
 class AutoScrollbar(Scrollbar):
@@ -211,6 +213,13 @@ class MainUI(object):
             font="{Segoe UI Light} 12 bold",
             textvariable=self.lbl_loggedin,
         )
+        self._lbl_version = Label(
+            parent,
+            font="{Segoe UI Light} 10 bold",
+            text="v%s" % tppm.__version__,
+            foreground="blue",
+            cursor="hand2",
+        )
 
         # widget commands
         self._listbox.bind('<<ListboxSelect>>', self._listbox_onselect)
@@ -233,6 +242,7 @@ class MainUI(object):
         self._btnLogin.configure(
             command=self._btn_login_command
         )
+        self._lbl_version.bind('<Button-1>', self._open_repo)
 
         # Geometry Management
         self._listbox.grid(
@@ -533,6 +543,18 @@ class MainUI(object):
             pady=5,
             rowspan=1,
             sticky="sw"
+        )
+        self._lbl_version.grid(
+            in_=parent,
+            column=1,
+            row=1,
+            columnspan=1,
+            ipadx=0,
+            ipady=0,
+            padx=0,
+            pady=0,
+            rowspan=1,
+            sticky="nw"
         )
 
         # Resize Behavior
