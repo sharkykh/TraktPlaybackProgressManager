@@ -37,4 +37,4 @@ python main.pyw
 
 
 ## Screenshot
-![Screenshot](https://cloud.githubusercontent.com/assets/10238474/22926771/be59930e-f2b6-11e6-9f4e-619aa5d1f235.png)
+![Screenshot](https://user-images.githubusercontent.com/10238474/50996863-cb4b5680-152b-11e9-9ec3-c21787289594.png)

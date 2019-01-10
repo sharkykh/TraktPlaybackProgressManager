@@ -7,6 +7,8 @@ import os.path
 import webbrowser
 from operator import itemgetter
 
+import arrow
+
 import six.moves.tkinter as Tk
 import six.moves.tkinter_messagebox as tk_messagebox
 from six import itervalues
@@ -24,7 +26,7 @@ from .ui import (
     set_icon
 )
 
-__version__ = '0.6'
+__version__ = '0.7'
 
 TRAKT_APP = {
     'name': 'Playback Progress Manager',
@@ -83,6 +85,16 @@ class AuthDialog(AuthUI):
 class MainScreen(MainUI):
     """ Main UI extension """
 
+    def _open_repo(self, event):
+        confirm = tk_messagebox.askokcancel(
+            None,
+            'Open the GitHub repository?'
+        )
+        if not confirm:
+            return False
+
+        webbrowser.open_new_tab('https://github.com/sharkykh/TraktPlaybackProgressManager')
+
     # Auth & Login
     def hide_auth_button(self):
         """ Hide auth button """
@@ -116,7 +128,8 @@ class MainScreen(MainUI):
 
     # (De)Select All
     def _btn_toggle_selection_command(self):
-        multiple = len(self._listbox.curselection()) > 1
+        one_option = len(self.root.playback_ids) == 1
+        multiple = len(self._listbox.curselection()) > (0 if one_option else 1)
         action = 'selection_clear' if multiple else 'selection_set'
         getattr(self._listbox, action)(0, Tk.END)
         self._listbox.event_generate('<<ListboxSelect>>')
@@ -226,7 +239,7 @@ class Application(object):
     def _fetch_list(self):
         if not self.authorization:
             tk_messagebox.showwarning('Error', 'Authentication required.')
-            return []
+            raise auth.NotAuthenticatedError()
 
         def make_items(data):
             for obj in itervalues(playback):
@@ -249,7 +262,11 @@ class Application(object):
         """
         self.main_win.listbox_clear_all()  # Clear
         if not local:
-            self.playback_ids = self._fetch_list()
+            try:
+                self.playback_ids = self._fetch_list()
+            except auth.NotAuthenticatedError:
+                self.playback_ids = []
+                return False
 
         if not self.playback_ids:
             if not local:
@@ -289,6 +306,8 @@ class Application(object):
         :param newinfo: Episode or Movie item from playback_ids
         """
         if len(newinfo) == 1:
+            paused_at = arrow.get(newinfo[0].paused_at).to('local').format('YYYY-MM-DD HH:mm:ss ZZ')
+
             if isinstance(newinfo[0], Episode):
                 self.main_win.lbl_showName.set('Show:')
                 self.main_win.lbl_season.set('Season:')
@@ -296,6 +315,7 @@ class Application(object):
                 self.main_win.lbl_episodeTitle.set('Title:')
 
                 self.main_win.txt_ID.set(newinfo[0].id)
+                self.main_win.txt_paused_at.set(paused_at)
                 self.main_win.txt_progress.set('%0.f%%' % newinfo[0].progress)
                 self.main_win.txt_showName.set(newinfo[0].show.title)
                 self.main_win.txt_season.set(newinfo[0].pk[0])
@@ -309,6 +329,7 @@ class Application(object):
                 self.main_win.lbl_episodeTitle.set('')
 
                 self.main_win.txt_ID.set(newinfo[0].id)
+                self.main_win.txt_paused_at.set(paused_at)
                 self.main_win.txt_progress.set('%0.f%%' % newinfo[0].progress)
                 self.main_win.txt_showName.set(newinfo[0].title)
                 self.main_win.txt_season.set(newinfo[0].year)
@@ -322,6 +343,7 @@ class Application(object):
             self.main_win.lbl_episodeTitle.set('Title:')
 
             self.main_win.txt_ID.set('')
+            self.main_win.txt_paused_at.set('')
             self.main_win.txt_progress.set('')
             self.main_win.txt_showName.set('')
             self.main_win.txt_season.set('')
@@ -335,6 +357,7 @@ class Application(object):
             self.main_win.lbl_episodeTitle.set('Title:')
 
             self.main_win.txt_ID.set('<Multiple>')
+            self.main_win.txt_paused_at.set('<Multiple>')
             self.main_win.txt_progress.set('<Multiple>')
             self.main_win.txt_showName.set('<Multiple>')
             self.main_win.txt_season.set('<Multiple>')

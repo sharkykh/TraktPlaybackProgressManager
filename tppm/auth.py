@@ -27,3 +27,7 @@ def load(path):
             return json.load(fh)
         except ValueError:
             return None
+
+
+class NotAuthenticatedError(Exception):
+    pass
