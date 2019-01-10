@@ -53,6 +53,11 @@ class MainUI(object):
         self._listbox_scrollbar = AutoScrollbar(
             self._listbox
         )
+        self._lbl_help = Label(
+            parent,
+            font="{Segoe UI Light} 12 bold",
+            text="Hold [Ctrl] to select multiple items",
+        )
         self._label_header = Label(
             parent,
             font="{Segoe UI} 16 bold",
@@ -76,13 +81,13 @@ class MainUI(object):
         self._btnRemoveSelected = Button(
             parent,
             font="{Segoe UI} 12 bold",
-            wraplength=120,
+            wraplength=175,
             text="Remove Selected",
         )
         self._btnSelectDeselectAll = Button(
             parent,
             font="{Segoe UI} 12 bold",
-            wraplength=120,
+            wraplength=175,
             text="Select / Deselect All",
         )
         self._btnLogin = Button(
@@ -231,14 +236,14 @@ class MainUI(object):
         # Geometry Management
         self._listbox.grid(
             in_=parent,
-            column=3,
+            column=4,
             row=2,
             columnspan=1,
             ipadx=0,
             ipady=0,
-            padx=0,
+            padx=5,
             pady=5,
-            rowspan=8,
+            rowspan=10,
             sticky="nsew"
         )
         self._listbox.columnconfigure(
@@ -250,13 +255,23 @@ class MainUI(object):
             weight=1
         )
         self._listbox_scrollbar.grid(
-            column=2,
-            rowspan=7,
+            column=4,
+            rowspan=10,
             sticky="ns"
+        )
+        self._lbl_help.grid(
+            in_=parent,
+            column=4,
+            row=11,
+            ipadx=0,
+            ipady=0,
+            padx=5,
+            pady=5,
+            sticky="nsew"
         )
         self._label_header.grid(
             in_=parent,
-            column=3,
+            column=4,
             row=1,
             columnspan=1,
             ipadx=0,
@@ -268,9 +283,9 @@ class MainUI(object):
         )
         self._label_actions.grid(
             in_=parent,
-            column=4,
-            row=1,
-            columnspan=1,
+            column=1,
+            row=9,
+            columnspan=3,
             ipadx=0,
             ipady=0,
             padx=0,
@@ -282,7 +297,7 @@ class MainUI(object):
             in_=parent,
             column=1,
             row=1,
-            columnspan=2,
+            columnspan=3,
             ipadx=0,
             ipady=0,
             padx=0,
@@ -292,51 +307,51 @@ class MainUI(object):
         )
         self._btnRefresh.grid(
             in_=parent,
-            column=4,
-            row=6,
+            column=1,
+            row=10,
             columnspan=1,
             ipadx=0,
             ipady=0,
             padx=0,
             pady=0,
-            rowspan=2,
+            rowspan=1,
             sticky=""
         )
         self._btnRemoveSelected.grid(
             in_=parent,
-            column=4,
-            row=2,
+            column=2,
+            row=10,
             columnspan=1,
             ipadx=0,
             ipady=0,
             padx=0,
             pady=0,
-            rowspan=2,
+            rowspan=1,
             sticky=""
         )
         self._btnSelectDeselectAll.grid(
             in_=parent,
-            column=4,
-            row=4,
+            column=3,
+            row=10,
             columnspan=1,
             ipadx=0,
             ipady=0,
             padx=0,
             pady=0,
-            rowspan=2,
+            rowspan=1,
             sticky=""
         )
         self._btnLogin.grid(
             in_=parent,
-            column=4,
-            row=7,
+            column=2,
+            row=11,
             columnspan=1,
             ipadx=0,
             ipady=0,
-            padx=5,
-            pady=5,
-            rowspan=2,
-            sticky="es"
+            padx=0,
+            pady=0,
+            rowspan=1,
+            sticky=""
         )
         self._lbl_ID.grid(
             in_=parent,
@@ -426,7 +441,7 @@ class MainUI(object):
             in_=parent,
             column=2,
             row=2,
-            columnspan=1,
+            columnspan=2,
             ipadx=0,
             ipady=0,
             padx=5,
@@ -438,7 +453,7 @@ class MainUI(object):
             in_=parent,
             column=2,
             row=3,
-            columnspan=1,
+            columnspan=2,
             ipadx=0,
             ipady=0,
             padx=5,
@@ -450,7 +465,7 @@ class MainUI(object):
             in_=parent,
             column=2,
             row=4,
-            columnspan=1,
+            columnspan=2,
             ipadx=0,
             ipady=0,
             padx=5,
@@ -462,7 +477,7 @@ class MainUI(object):
             in_=parent,
             column=2,
             row=5,
-            columnspan=1,
+            columnspan=2,
             ipadx=0,
             ipady=0,
             padx=5,
@@ -474,7 +489,7 @@ class MainUI(object):
             in_=parent,
             column=2,
             row=6,
-            columnspan=1,
+            columnspan=2,
             ipadx=0,
             ipady=0,
             padx=5,
@@ -486,7 +501,7 @@ class MainUI(object):
             in_=parent,
             column=2,
             row=7,
-            columnspan=1,
+            columnspan=2,
             ipadx=0,
             ipady=0,
             padx=5,
@@ -498,7 +513,7 @@ class MainUI(object):
             in_=parent,
             column=2,
             row=8,
-            columnspan=1,
+            columnspan=2,
             ipadx=0,
             ipady=0,
             padx=5,
@@ -509,7 +524,7 @@ class MainUI(object):
         self._lbl_loggedin.grid(
             in_=parent,
             column=1,
-            row=9,
+            row=11,
             columnspan=2,
             ipadx=0,
             ipady=0,
@@ -521,7 +536,7 @@ class MainUI(object):
 
         # Resize Behavior
         parent.resizable(False, False)
-        parent.grid_rowconfigure(1, weight=0, minsize=30, pad=20)
+        parent.grid_rowconfigure(1, weight=0, minsize=30, pad=0)
         parent.grid_rowconfigure(2, weight=0, minsize=30, pad=0)
         parent.grid_rowconfigure(3, weight=0, minsize=30, pad=0)
         parent.grid_rowconfigure(4, weight=0, minsize=30, pad=0)
@@ -529,8 +544,10 @@ class MainUI(object):
         parent.grid_rowconfigure(6, weight=0, minsize=30, pad=0)
         parent.grid_rowconfigure(7, weight=0, minsize=30, pad=0)
         parent.grid_rowconfigure(8, weight=0, minsize=30, pad=0)
-        parent.grid_rowconfigure(9, weight=0, minsize=160, pad=0)
+        parent.grid_rowconfigure(9, weight=0, minsize=30, pad=0)
+        parent.grid_rowconfigure(10, weight=0, minsize=60, pad=0)
+        parent.grid_rowconfigure(11, weight=0, minsize=30, pad=5)
         parent.grid_columnconfigure(1, weight=0, minsize=70, pad=5)
-        parent.grid_columnconfigure(2, weight=0, minsize=450, pad=0)
-        parent.grid_columnconfigure(3, weight=0, minsize=450, pad=0)
-        parent.grid_columnconfigure(4, weight=0, minsize=120, pad=0)
+        parent.grid_columnconfigure(2, weight=0, minsize=175, pad=0)
+        parent.grid_columnconfigure(3, weight=0, minsize=175, pad=0)
+        parent.grid_columnconfigure(4, weight=0, minsize=400, pad=0)
