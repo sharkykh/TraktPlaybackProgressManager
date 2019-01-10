@@ -229,7 +229,7 @@ class Application(object):
     def _fetch_list(self):
         if not self.authorization:
             tk_messagebox.showwarning('Error', 'Authentication required.')
-            return []
+            raise auth.NotAuthenticatedError()
 
         def make_items(data):
             for obj in itervalues(playback):
@@ -252,7 +252,11 @@ class Application(object):
         """
         self.main_win.listbox_clear_all()  # Clear
         if not local:
-            self.playback_ids = self._fetch_list()
+            try:
+                self.playback_ids = self._fetch_list()
+            except auth.NotAuthenticatedError:
+                self.playback_ids = []
+                return False
 
         if not self.playback_ids:
             if not local:
