@@ -7,6 +7,8 @@ import os.path
 import webbrowser
 from operator import itemgetter
 
+import arrow
+
 import six.moves.tkinter as Tk
 import six.moves.tkinter_messagebox as tk_messagebox
 from six import itervalues
@@ -289,6 +291,8 @@ class Application(object):
         :param newinfo: Episode or Movie item from playback_ids
         """
         if len(newinfo) == 1:
+            paused_at = arrow.get(newinfo[0].paused_at).to('local').format('YYYY-MM-DD HH:mm:ss ZZ')
+
             if isinstance(newinfo[0], Episode):
                 self.main_win.lbl_showName.set('Show:')
                 self.main_win.lbl_season.set('Season:')
@@ -296,7 +300,7 @@ class Application(object):
                 self.main_win.lbl_episodeTitle.set('Title:')
 
                 self.main_win.txt_ID.set(newinfo[0].id)
-                self.main_win.txt_paused_at.set(newinfo[0].paused_at.strftime('%Y-%m-%d %H:%M:%S UTC'))
+                self.main_win.txt_paused_at.set(paused_at)
                 self.main_win.txt_progress.set('%0.f%%' % newinfo[0].progress)
                 self.main_win.txt_showName.set(newinfo[0].show.title)
                 self.main_win.txt_season.set(newinfo[0].pk[0])
@@ -310,7 +314,7 @@ class Application(object):
                 self.main_win.lbl_episodeTitle.set('')
 
                 self.main_win.txt_ID.set(newinfo[0].id)
-                self.main_win.txt_paused_at.set(newinfo[0].paused_at.strftime('%Y-%m-%d %H:%M:%S UTC'))
+                self.main_win.txt_paused_at.set(paused_at)
                 self.main_win.txt_progress.set('%0.f%%' % newinfo[0].progress)
                 self.main_win.txt_showName.set(newinfo[0].title)
                 self.main_win.txt_season.set(newinfo[0].year)
