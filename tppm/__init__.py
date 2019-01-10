@@ -118,7 +118,8 @@ class MainScreen(MainUI):
 
     # (De)Select All
     def _btn_toggle_selection_command(self):
-        multiple = len(self._listbox.curselection()) > 1
+        one_option = len(self.root.playback_ids) == 1
+        multiple = len(self._listbox.curselection()) > (0 if one_option else 1)
         action = 'selection_clear' if multiple else 'selection_set'
         getattr(self._listbox, action)(0, Tk.END)
         self._listbox.event_generate('<<ListboxSelect>>')
