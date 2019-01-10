@@ -26,7 +26,7 @@ from .ui import (
     set_icon
 )
 
-__version__ = '0.6'
+__version__ = '0.7'
 
 TRAKT_APP = {
     'name': 'Playback Progress Manager',
