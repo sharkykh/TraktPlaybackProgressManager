@@ -5,6 +5,7 @@ from __future__ import unicode_literals
 
 import os.path
 from operator import itemgetter
+from threading import Thread
 
 import arrow
 
@@ -62,22 +63,29 @@ class Application(object):
     def main(self):
         """ Run main application """
         self.main_tk = Tk.Tk()
-        self.main_win = MainScreen(self.main_tk, self)
+        self.main_tk.title('Trakt.tv Playback Progress Remover')
         set_icon(self.main_tk)
-        center_toplevel(self.main_tk)
 
         self.busyman = BusyManager(self.main_tk)
 
-        if self.authorization:
-            self.busyman.busy()
-            self.update_user_info()
-            self.refresh_list()
-            self.busyman.unbusy()
+        self.main_win = MainScreen(self.main_tk, self)
+        center_toplevel(self.main_tk)
 
-        self.main_tk.update()
         self.show_auth_window()
 
+        thread_worker = Thread(target=self.worker, name='worker')
+        thread_worker.start()
+
         self.main_tk.mainloop()
+
+    def worker(self):
+        self.busyman.busy()
+
+        if self.authorization:
+            self.refresh_list()
+            self.update_user_info()
+
+        self.busyman.unbusy()
 
     def _fetch_list(self):
         if not self.authorization:
