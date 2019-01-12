@@ -156,6 +156,8 @@ class Application(object):
 
         :param newinfo: Episode or Movie item from playback_ids
         """
+        # TODO: Make more DRY.
+
         if len(newinfo) == 1:
             paused_at = arrow.get(newinfo[0].paused_at).to('local').format('YYYY-MM-DD HH:mm:ss ZZ')
 
@@ -170,7 +172,9 @@ class Application(object):
                 self.main_win.txt_progress.set('%0.f%%' % newinfo[0].progress)
                 self.main_win.txt_showName.set(newinfo[0].show.title)
                 self.main_win.txt_season.set(newinfo[0].pk[0])
+                self.main_win._txtEpisode.grid()
                 self.main_win.txt_episode.set(newinfo[0].pk[1])
+                self.main_win._txtTitle.grid()
                 self.main_win.txt_title.set(newinfo[0].title)
 
             elif isinstance(newinfo[0], Movie):
@@ -185,7 +189,9 @@ class Application(object):
                 self.main_win.txt_showName.set(newinfo[0].title)
                 self.main_win.txt_season.set(newinfo[0].year)
                 self.main_win.txt_episode.set('')
+                self.main_win._txtEpisode.grid_remove()
                 self.main_win.txt_title.set('')
+                self.main_win._txtTitle.grid_remove()
 
         elif len(newinfo) == 0:
             self.main_win.lbl_showName.set('Show:')
@@ -198,7 +204,9 @@ class Application(object):
             self.main_win.txt_progress.set('')
             self.main_win.txt_showName.set('')
             self.main_win.txt_season.set('')
+            self.main_win._txtEpisode.grid()
             self.main_win.txt_episode.set('')
+            self.main_win._txtTitle.grid()
             self.main_win.txt_title.set('')
 
         else:  # more than one
@@ -212,7 +220,9 @@ class Application(object):
             self.main_win.txt_progress.set('<Multiple>')
             self.main_win.txt_showName.set('<Multiple>')
             self.main_win.txt_season.set('<Multiple>')
+            self.main_win._txtEpisode.grid()
             self.main_win.txt_episode.set('<Multiple>')
+            self.main_win._txtTitle.grid()
             self.main_win.txt_title.set('<Multiple>')
 
     def show_auth_window(self):
