@@ -12,7 +12,7 @@ from six.moves.tkinter import (
     TclError
 )
 
-import tppm
+from .. import app
 
 
 # Based on: http://effbot.org/zone/tkinter-autoscrollbar.htm
@@ -35,11 +35,11 @@ class AutoScrollbar(Scrollbar):
 
 
 class MainUI(object):
-    def __init__(self, parent, app):
+    def __init__(self, parent, root):
         parent.title('Trakt.tv Playback Progress Remover')
 
         self.parent = parent
-        self.root = app
+        self.root = root
 
         self.selectedStatus = False
 
@@ -216,7 +216,7 @@ class MainUI(object):
         self._lbl_version = Label(
             parent,
             font="{Segoe UI Light} 10 bold",
-            text="v%s" % tppm.__version__,
+            text="v%s" % app.__version__,
             foreground="blue",
             cursor="hand2",
         )

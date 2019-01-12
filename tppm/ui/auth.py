@@ -11,11 +11,11 @@ from six.moves.tkinter import (
 
 
 class AuthUI(object):
-    def __init__(self, parent, app):
+    def __init__(self, parent, root):
         parent.title('Auth window')
 
         self.parent = parent
-        self.root = app
+        self.root = root
 
         # Widget Initialization
         self._label_header = Label(
