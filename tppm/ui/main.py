@@ -205,7 +205,7 @@ class MainUI(object):
             textvariable=self.txt_title,
             width=0,
         )
-        self.lbl_loggedin = StringVar(value="Not logged in.")
+        self.lbl_loggedin = StringVar(value="")
         self._lbl_loggedin = Label(
             parent,
             font="{Segoe UI Light} 12 bold",
@@ -362,6 +362,8 @@ class MainUI(object):
             rowspan=1,
             sticky=""
         )
+        # Hide the login button at first
+        self._btnLogin.grid_remove()
         self._lbl_ID.grid(
             in_=parent,
             column=1,

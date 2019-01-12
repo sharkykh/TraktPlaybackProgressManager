@@ -240,10 +240,9 @@ class Application(object):
         Updates the authed username (and full name if present)
         """
         if not self.authorization:
+            self.main_win.toggle_auth_button(True)
             self.main_win.lbl_loggedin.set('Not logged in.')
             return
-
-        self.main_win.hide_auth_button()
 
         user_settings = Trakt['users/settings'].get()
         self.username = user_settings['user']['username']
@@ -253,6 +252,7 @@ class Application(object):
         if self.fullname not in ('', self.username):
             text += ' ({0})'.format(self.fullname)
 
+        self.main_win.toggle_auth_button(False)
         self.main_win.lbl_loggedin.set(text)
 
     @property

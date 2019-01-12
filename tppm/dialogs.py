@@ -70,9 +70,12 @@ class MainScreen(MainUI):
         webbrowser.open_new_tab('https://github.com/sharkykh/TraktPlaybackProgressManager')
 
     # Auth & Login
-    def hide_auth_button(self):
-        """ Hide auth button """
-        self._btnLogin.grid_forget()
+    def toggle_auth_button(self, show):
+        """ Toggle auth button """
+        if show:
+            self._btnLogin.grid()
+        else:
+            self._btnLogin.grid_remove()
 
     def _btn_login_command(self):
         self.root.show_auth_window()
