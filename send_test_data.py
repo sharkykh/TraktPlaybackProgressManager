@@ -15,7 +15,7 @@ def gen_progress():
 
 
 def send_test_data():
-    Trakt['scrobble'].pause(movie={'ids': {'tmdb': 118340}}, progress=gen_progress())
+    Trakt['scrobble'].pause(movie={'ids': {'tmdb': 404368}}, progress=gen_progress())
     Trakt['scrobble'].pause(episode={'ids': {'tvdb': 5761493}}, progress=gen_progress())
     Trakt['scrobble'].pause(episode={'ids': {'tvdb': 5951173}}, progress=gen_progress())
     Trakt['scrobble'].pause(episode={'ids': {'tvdb': 5950264}}, progress=gen_progress())
