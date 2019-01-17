@@ -228,6 +228,9 @@ class Application(object):
     def show_auth_window(self):
         """ Create and display an Auth window if not authed. """
         if not self.authorization:
+            self.main_win.toggle_auth_button(True)
+            self.main_win.lbl_loggedin.set('Not logged in.')
+
             diag_root = Tk.Toplevel(self.main_tk, {'name': 'auth_window'})
             diag_root.grab_set()
             self.busyman.busy()
