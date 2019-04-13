@@ -400,7 +400,7 @@ class Application(object):
 
         text = 'Logged in as: {0}'.format(self.username)
         if self.fullname not in ('', self.username):
-            text += ' ({1})'.format(self.fullname)
+            text += ' ({0})'.format(self.fullname)
 
         self.main_win.lbl_loggedin.set(text)
 
