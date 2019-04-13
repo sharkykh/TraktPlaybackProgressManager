@@ -5,7 +5,6 @@ from __future__ import unicode_literals
 
 import os.path
 from operator import itemgetter
-from threading import Thread
 
 import arrow
 
@@ -73,19 +72,15 @@ class Application(object):
 
         self.show_auth_window()
 
-        thread_worker = Thread(target=self.worker, name='worker')
-        thread_worker.start()
-
-        self.main_tk.mainloop()
-
-    def worker(self):
         self.busyman.busy()
 
         if self.authorization:
-            self.refresh_list()
             self.update_user_info()
+            self.refresh_list()
 
         self.busyman.unbusy()
+
+        self.main_tk.mainloop()
 
     def _fetch_list(self):
         if not self.authorization:
