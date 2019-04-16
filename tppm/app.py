@@ -82,6 +82,50 @@ class Application(object):
 
         self.main_tk.mainloop()
 
+    def stop_currently_playing(self):
+        playing = Trakt.http.get('users/me/watching')
+        if not playing.status_code == 200:
+            tk_messagebox.showinfo('Message', 'Nothing is playing right now.')
+            return False
+
+        playing = playing.json()
+
+        def progress():
+            expires = arrow.get(playing['expires_at']).timestamp
+            started = arrow.get(playing['started_at']).timestamp
+            now = arrow.utcnow().timestamp
+
+            watched = now - started
+            total = expires - started
+            return (watched / total) * 100
+
+        itemType = playing['type']
+        params = {
+            'progress': progress(),
+            itemType: {
+                'ids': {
+                    'trakt': playing[itemType]['ids']['trakt'],
+                }
+            }
+        }
+        Trakt['scrobble'].pause(**params)
+
+        if playing['type'] == 'episode':
+            itemInfo = '{0[show][title]} {0[episode][season]}x{0[episode][number]} "{0[episode][title]}"'.format(playing)
+        elif playing['type'] == 'movie':
+            itemInfo = '{0[movie][title]} ({0[movie][year]})'.format(playing)
+        else:
+            itemInfo = '(Unknown)'
+
+        tk_messagebox.showinfo(
+            'Message',
+            'Ok. Current playing {0}:\n{1}\nstopped at {2}%.'.format(
+                itemType,
+                itemInfo,
+                int(params['progress'])
+            )
+        )
+
     def _fetch_list(self):
         if not self.authorization:
             tk_messagebox.showwarning('Error', 'Authentication required.')

@@ -91,6 +91,12 @@ class MainUI(object):
             wraplength=175,
             text="Select / Deselect All",
         )
+        self._btnStopCurrentlyPlaying = Button(
+            parent,
+            font="{Segoe UI} 12 bold",
+            # wraplength=80,
+            text="Stop Currently Playing",
+        )
         self._btnLogin = Button(
             parent,
             font="{Segoe UI} 12 bold",
@@ -237,6 +243,9 @@ class MainUI(object):
         self._btnSelectDeselectAll.configure(
             command=self._btn_toggle_selection_command
         )
+        self._btnStopCurrentlyPlaying.configure(
+            command=self._btn_stop_currently_playing
+        )
         self._btnLogin.configure(
             command=self._btn_login_command
         )
@@ -349,6 +358,18 @@ class MainUI(object):
             pady=0,
             rowspan=1,
             sticky=""
+        )
+        self._btnStopCurrentlyPlaying.grid(
+            in_=parent,
+            column=2,
+            row=11,
+            columnspan=2,
+            ipadx=0,
+            ipady=0,
+            padx=5,
+            pady=0,
+            rowspan=1,
+            sticky="ne"
         )
         self._btnLogin.grid(
             in_=parent,

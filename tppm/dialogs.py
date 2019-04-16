@@ -80,6 +80,10 @@ class MainScreen(MainUI):
     def _btn_login_command(self):
         self.root.show_auth_window()
 
+    # Currently Playing
+    def _btn_stop_currently_playing(self):
+        self.root.stop_currently_playing()
+
     # Refresh
     def _btn_refresh_command(self):
         self.root.busyman.busy()
