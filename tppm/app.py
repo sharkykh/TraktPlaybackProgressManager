@@ -70,11 +70,11 @@ class Application(object):
         self.main_win = MainScreen(self.main_tk, self)
         center_toplevel(self.main_tk)
 
-        self.show_auth_window()
+        opened = self.show_auth_window()
 
         self.busyman.busy()
 
-        if self.authorization:
+        if self.authorization and not opened:
             self.update_user_info()
             self.refresh_list()
 
@@ -238,6 +238,8 @@ class Application(object):
 
             self.main_tk.grab_release()
             self.busyman.unbusy()
+            return True
+        return False
 
     def _on_token_refreshed(self, username, response):
         """ OAuth token refreshed, save tokens for future calls. """
