@@ -1,4 +1,8 @@
 # Trakt.tv Playback Progress Manager
+
+## *Update:* A web version is now available at [sharkykh.github.io/tppm](https://sharkykh.github.io/tppm/)!
+
+
 This is a small Tkinter GUI application that allows a [Trakt.tv](https://trakt.tv) user manage the playback progress items stored in their account.
 
 **[Reddit Post](https://www.reddit.com/r/trakt/comments/95rf3h/playback_progress_manager_python_application/?ref=share&ref_source=link)**
