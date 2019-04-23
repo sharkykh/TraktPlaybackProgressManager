@@ -45,7 +45,7 @@ class Application(object):
 
     def __init__(self):
         # Trakt client configuration
-        Trakt.base_url = 'http://api.trakt.tv'
+        Trakt.base_url = 'https://api.trakt.tv'
         Trakt.configuration.defaults.app(**TRAKT_APP)
         Trakt.configuration.defaults.client(**TRAKT_CLIENT)
         # Bind trakt events
