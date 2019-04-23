@@ -12,7 +12,7 @@ from six.moves.tkinter import (
     TclError
 )
 
-import tppm
+from .. import app
 
 
 # Based on: http://effbot.org/zone/tkinter-autoscrollbar.htm
@@ -35,11 +35,9 @@ class AutoScrollbar(Scrollbar):
 
 
 class MainUI(object):
-    def __init__(self, parent, app):
-        parent.title('Trakt.tv Playback Progress Remover')
-
+    def __init__(self, parent, root):
         self.parent = parent
-        self.root = app
+        self.root = root
 
         self.selectedStatus = False
 
@@ -92,6 +90,12 @@ class MainUI(object):
             font="{Segoe UI} 12 bold",
             wraplength=175,
             text="Select / Deselect All",
+        )
+        self._btnStopCurrentlyPlaying = Button(
+            parent,
+            font="{Segoe UI} 12 bold",
+            # wraplength=80,
+            text="Stop Currently Playing",
         )
         self._btnLogin = Button(
             parent,
@@ -207,7 +211,7 @@ class MainUI(object):
             textvariable=self.txt_title,
             width=0,
         )
-        self.lbl_loggedin = StringVar(value="Not logged in.")
+        self.lbl_loggedin = StringVar(value="")
         self._lbl_loggedin = Label(
             parent,
             font="{Segoe UI Light} 12 bold",
@@ -216,7 +220,7 @@ class MainUI(object):
         self._lbl_version = Label(
             parent,
             font="{Segoe UI Light} 10 bold",
-            text="v%s" % tppm.__version__,
+            text="v%s" % app.__version__,
             foreground="blue",
             cursor="hand2",
         )
@@ -238,6 +242,9 @@ class MainUI(object):
         )
         self._btnSelectDeselectAll.configure(
             command=self._btn_toggle_selection_command
+        )
+        self._btnStopCurrentlyPlaying.configure(
+            command=self._btn_stop_currently_playing
         )
         self._btnLogin.configure(
             command=self._btn_login_command
@@ -352,6 +359,18 @@ class MainUI(object):
             rowspan=1,
             sticky=""
         )
+        self._btnStopCurrentlyPlaying.grid(
+            in_=parent,
+            column=2,
+            row=11,
+            columnspan=2,
+            ipadx=0,
+            ipady=0,
+            padx=5,
+            pady=0,
+            rowspan=1,
+            sticky="ne"
+        )
         self._btnLogin.grid(
             in_=parent,
             column=2,
@@ -364,6 +383,8 @@ class MainUI(object):
             rowspan=1,
             sticky=""
         )
+        # Hide the login button at first
+        self._btnLogin.grid_remove()
         self._lbl_ID.grid(
             in_=parent,
             column=1,

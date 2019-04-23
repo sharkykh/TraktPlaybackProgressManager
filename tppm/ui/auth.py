@@ -11,11 +11,11 @@ from six.moves.tkinter import (
 
 
 class AuthUI(object):
-    def __init__(self, parent, app):
+    def __init__(self, parent, root):
         parent.title('Auth window')
 
         self.parent = parent
-        self.root = app
+        self.root = root
 
         # Widget Initialization
         self._label_header = Label(
@@ -26,23 +26,23 @@ class AuthUI(object):
         )
         self._button_get_code = Button(
             parent,
-            font="{MS Sans Serif} 12 bold",
+            font="{Segoe UI} 12 bold",
             text="Get PIN Code",
         )
         self._label_enter_code = Label(
             parent,
-            font="{MS Sans Serif} 14",
+            font="{Segoe UI} 14",
             text="Enter the code:",
         )
         self._label_click = Label(
             parent,
-            font="{MS Sans Serif} 14",
+            font="{Segoe UI} 14",
             text="Click the button to get a code:",
         )
         self.pin_code = StringVar()
         self._entry_code = Entry(
             parent,
-            font="{MS Sans Serif} 14 bold",
+            font="{Segoe UI} 14 bold",
             width=10,
             justify="center",
             textvariable=self.pin_code,
@@ -51,7 +51,7 @@ class AuthUI(object):
         self._button_done = Button(
             parent,
             borderwidth=3,
-            font="{MS Sans Serif} 12 bold",
+            font="{Segoe UI} 12 bold",
             text="Done",
             state="disabled",
         )
