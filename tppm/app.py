@@ -10,10 +10,10 @@ import arrow
 
 import six.moves.tkinter as Tk
 import six.moves.tkinter_messagebox as tk_messagebox
-from six import itervalues
+from six import itervalues, raise_from
 from six.moves import filter, map
 
-from trakt import Trakt
+from trakt import Trakt, ClientError
 from trakt.objects import Episode, Movie, Show
 
 from . import auth
@@ -35,6 +35,7 @@ TRAKT_CLIENT = {
     'id': '907c2fe5ff19a529456c0058d2c96f6913f62b55fc6e9a86605f05a0c4e2fec7',
     'secret': '0b70b2072730e0e2ab845f8f89fbfa4a808f47e10678365cb746f4b81fbb56a3'
 }
+
 
 class Application(object):
     """ Application container """
@@ -70,13 +71,20 @@ class Application(object):
         self.main_win = MainScreen(self.main_tk, self)
         center_toplevel(self.main_tk)
 
-        opened = self.show_auth_window()
+        auth_opened = self.show_auth_window()
 
         self.busyman.busy()
 
-        if self.authorization and not opened:
-            self.update_user_info()
-            self.refresh_list()
+        if self.authorization and not auth_opened:
+            try:
+                self.update_user_info(raise_on_error=True)
+                self.refresh_list(raise_on_error=True)
+            except auth.NotAuthenticatedError:
+                self._authorization = None
+                auth.remove(self.auth_filepath)
+                self.main_win.toggle_auth_button(True)
+                self.main_win.lbl_loggedin.set('Not logged in.')
+                tk_messagebox.showwarning('Error', 'Authentication required.')
 
         self.busyman.unbusy()
 
@@ -84,7 +92,10 @@ class Application(object):
 
     def stop_currently_playing(self):
         playing = Trakt.http.get('users/me/watching')
-        if not playing.status_code == 200:
+        if playing.status_code == 401:
+            tk_messagebox.showwarning('Error', 'Authentication required.')
+            return False
+        if playing.status_code != 200:
             tk_messagebox.showinfo('Message', 'Nothing is playing right now.')
             return False
 
@@ -140,11 +151,14 @@ class Application(object):
                     yield (obj.id, obj)
 
         # Fetch playback
-        playback = Trakt['sync/playback'].get(exceptions=True)
+        try:
+            playback = Trakt['sync/playback'].get(exceptions=True)
+        except ClientError as error:
+            raise_from(auth.NotAuthenticatedError(), error)
 
         return list(make_items(playback))
 
-    def refresh_list(self, local=False):
+    def refresh_list(self, local=False, raise_on_error=False):
         """
         Refreshes the Listbox with items, source depends on the value of `local`
 
@@ -154,7 +168,9 @@ class Application(object):
         if not local:
             try:
                 self.playback_ids = self._fetch_list()
-            except auth.NotAuthenticatedError:
+            except auth.NotAuthenticatedError as error:
+                if raise_on_error:
+                    raise error
                 self.playback_ids = []
                 return False
 
@@ -289,7 +305,7 @@ class Application(object):
         """ OAuth token refreshed, save tokens for future calls. """
         self.authorization = (response, username)
 
-    def update_user_info(self):
+    def update_user_info(self, raise_on_error=False):
         """
         Updates the authed username (and full name if present)
         """
@@ -298,7 +314,13 @@ class Application(object):
             self.main_win.lbl_loggedin.set('Not logged in.')
             return
 
-        user_settings = Trakt['users/settings'].get()
+        try:
+            user_settings = Trakt['users/settings'].get(exceptions=True)
+        except ClientError as error:
+            if raise_on_error:
+                raise_from(auth.NotAuthenticatedError(), error)
+            return
+
         self.username = user_settings['user']['username']
         self.fullname = user_settings['user']['name']
 

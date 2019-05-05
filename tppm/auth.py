@@ -29,5 +29,16 @@ def load(path):
             return None
 
 
+def remove(path):
+    if not os.path.isfile(path):
+        return False
+
+    try:
+        os.remove(path)
+    except OSError:
+        return False
+    return True
+
+
 class NotAuthenticatedError(Exception):
     pass
